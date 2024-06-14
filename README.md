@@ -10,12 +10,12 @@
 
 <br/>
 
-#### System Architecture
+#### Backend System Architecture
 ![SystemArchitecture](./image/SystemArchitecture.drawio.png)
 
 <br/>
 
-#### Deploy Architecture
+#### Backend Deploy Architecture
 ![DeployArchitecture](./image/DeployArchitecture.drawio.png)
 
 <br/>
@@ -67,8 +67,10 @@
 
 <br/>
 
-#### `중고 거래 게시글 스크래퍼`
-- 자동화
+##### 중고 거래 게시글 스크래퍼
+- 중고 거래 게시글 스크래핑
+  - 게시글에서 GPT를 사용해 제품명 추출
+  - 중복을 제외한 게시글 데이터베이스에 저장
 
 <br/>
 
