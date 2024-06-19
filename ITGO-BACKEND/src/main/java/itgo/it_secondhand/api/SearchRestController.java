@@ -1,5 +1,6 @@
 package itgo.it_secondhand.api;
 
+import itgo.it_secondhand.api.DTO.ResponseDTO;
 import itgo.it_secondhand.enum_.SortBy;
 import itgo.it_secondhand.service.post.DTO.FindPostResDTO;
 import itgo.it_secondhand.service.search.DTO.*;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import static itgo.it_secondhand.api.DTO.ResponseDTO.success;
 
 @RestController
 @RequestMapping("/api/v2")
@@ -26,7 +29,7 @@ public class SearchRestController {
 
 
     @GetMapping("/posts/search")
-    public ResponseEntity<FindPostResDTO> keywordSearch
+    public ResponseEntity<ResponseDTO<?>> keywordSearch
             (@RequestParam Long memberId, @RequestParam String keyword,
              @PageableDefault(page = 0, size = 10) Pageable pageable){
 
@@ -40,11 +43,11 @@ public class SearchRestController {
 
         FindPostResDTO responseDTO = searchService.keywordSearch(reqDTO);
 
-        return ResponseEntity.ok(responseDTO);
+        return ResponseEntity.ok().body(success(responseDTO));
     }
 
     @GetMapping("/search/recent")
-    public ResponseEntity<RecentSearchResDTO> recentSearches
+    public ResponseEntity<ResponseDTO<?>> recentSearches
             (@RequestParam Long memberId,
              @PageableDefault(page = 0, size = 10) Pageable pageable){
 
@@ -56,12 +59,12 @@ public class SearchRestController {
 
         RecentSearchResDTO responseDTO = searchService.recentSearches(reqDTO);
 
-        return ResponseEntity.ok(responseDTO);
+        return ResponseEntity.ok().body(success(responseDTO));
     }
 
 
     @GetMapping("/posts/ranking")
-    public ResponseEntity<RankResDTO> ranking
+    public ResponseEntity<ResponseDTO<?>> ranking
             (@PageableDefault(page = 0, size = 10) Pageable pageable){
 
         RankReqDTO reqDTO = RankReqDTO.builder()
@@ -71,7 +74,7 @@ public class SearchRestController {
 
         RankResDTO responseDTO = searchService.getRanking(reqDTO);
 
-        return ResponseEntity.ok(responseDTO);
+        return ResponseEntity.ok().body(success(responseDTO));
     }
 
 
