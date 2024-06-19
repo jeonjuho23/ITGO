@@ -7,13 +7,17 @@ import itgo.it_secondhand.api.DTO.device.FindDeviceListResponseDTO;
 import itgo.it_secondhand.domain.Category;
 import itgo.it_secondhand.domain.LaptopInfo;
 import itgo.it_secondhand.domain.MobileInfo;
-import itgo.it_secondhand.enum_.SortBy;
 import itgo.it_secondhand.repository.CategoryRepository;
 import itgo.it_secondhand.service.device.DTO.*;
 import itgo.it_secondhand.service.device.DeviceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -28,11 +32,11 @@ public class DeviceRestController {
 
     @GetMapping
     public ResponseEntity<ResponseDTO<?>> findDeviceList
-            (@RequestParam int page, @RequestParam int size, @RequestParam SortBy sortBy) {
+            (@PageableDefault(page = 0, size = 10) Pageable pageable) {
 
         FindDeviceListResDTO deviceList = deviceService.findDeviceList(
                 FindDeviceListReqDTO.builder()
-                        .page(page).size(size).build());
+                        .page(pageable.getPageNumber()).size(pageable.getPageSize()).build());
 
         FindDeviceListResponseDTO findDeviceListResponseDTO = FindDeviceListResponseDTO.builder()
                 .deviceList(deviceList.getDeviceList())
@@ -44,12 +48,12 @@ public class DeviceRestController {
 
     @GetMapping("/by/{categoryId}")
     public ResponseEntity<ResponseDTO<?>> findDeviceListByCategory
-            (@RequestParam int page, @RequestParam int size, @RequestParam SortBy sortBy,
-             @PathVariable(name = "categoryId") Long category) {
+            (@PathVariable(name = "categoryId") Long category,
+             @PageableDefault(page = 0, size = 10) Pageable pageable) {
 
         FindDeviceListResDTO deviceList = deviceService.findDeviceListByCategory(
                 FindDeviceListByCategoryReqDTO.builder()
-                        .page(page).size(size)
+                        .page(pageable.getPageNumber()).size(pageable.getPageSize())
                         .category(category)
                         .build());
 
