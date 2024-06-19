@@ -7,14 +7,11 @@ import itgo.it_secondhand.service.Member.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/v2/members")
 public class MemberController {
 
     @Autowired
@@ -37,6 +34,32 @@ public class MemberController {
 
             return ResponseEntity.ok(responseUserDTO);
         }catch (Exception e) {
+            ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
+    }
+
+    @GetMapping("/{memberId}/profiles")
+    public ResponseEntity<?> myProfile(@PathVariable(name = "memberId") Long memberId){
+        log.info("마이페이지 called");
+        Member user = memberService.getByCredentials(memberId);
+        if (user != null){
+            return ResponseEntity.ok().body(user);
+        }else{
+            ResponseDTO responseDTO=new ResponseDTO().builder()
+                    .error("mypage error")
+                    .build();
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
+    }
+
+    @PatchMapping("/{memberId}/profiles")
+    public ResponseEntity<?> updateProfile(@PathVariable(name = "memberId") Long memberId, @RequestBody MemberDTO memberDTO){
+        log.info("updateProfile 호출");
+        try{
+            Member responseUser = memberService.updateMember(memberDTO, memberDTO.getPhone());
+            return ResponseEntity.ok(responseUser);
+        }catch (Exception e){
             ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
             return ResponseEntity.badRequest().body(responseDTO);
         }

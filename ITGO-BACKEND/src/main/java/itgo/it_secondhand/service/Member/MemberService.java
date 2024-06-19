@@ -7,7 +7,7 @@ public interface MemberService {
 
     Member createMember(MemberDTO memberDTO);
 
-    Member getByCredentials(String phone);
+    Member getByCredentials(Long memberId);
 
     Member updateMember(MemberDTO memberDTO,String phone);
 

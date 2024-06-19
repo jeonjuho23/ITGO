@@ -44,13 +44,8 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public Member getByCredentials(String phone) {
-        final Member originalUser = memberRepository.findByPhone(phone);
-        if(originalUser != null){
-            log.info("search successful");
-            return originalUser;
-        }
-        return null;
+    public Member getByCredentials(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow();
     }
 
     @Override

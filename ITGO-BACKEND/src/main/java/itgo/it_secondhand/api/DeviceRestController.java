@@ -13,22 +13,20 @@ import itgo.it_secondhand.service.device.DeviceService;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.boot.model.process.internal.ScanningCoordinator;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/device")
+@RequestMapping("/api/v2/devices")
 @RequiredArgsConstructor
 public class DeviceRestController {
     private final DeviceService deviceService;
     private final CategoryRepository categoryRepository;
 
-    @GetMapping("/find/list")
-    public ResponseEntity<FindDeviceListResponseDTO> findDeviceList(@RequestParam int page, @RequestParam int size, @RequestParam SortBy sortBy){
+    @GetMapping
+    public ResponseEntity<FindDeviceListResponseDTO> findDeviceList
+            (@RequestParam int page, @RequestParam int size, @RequestParam SortBy sortBy) {
 
         FindDeviceListResDTO deviceList = deviceService.findDeviceList(
                 FindDeviceListReqDTO.builder()
@@ -42,9 +40,10 @@ public class DeviceRestController {
                         .build());
     }
 
-    @GetMapping("/find/list/byCategory")
-    public ResponseEntity<FindDeviceListResponseDTO> findDeviceListByCategory(@RequestParam int page, @RequestParam int size, @RequestParam SortBy sortBy,
-                                                                              @RequestParam Long category){
+    @GetMapping("/by/{categoryId}")
+    public ResponseEntity<FindDeviceListResponseDTO> findDeviceListByCategory
+            (@RequestParam int page, @RequestParam int size, @RequestParam SortBy sortBy,
+             @PathVariable(name = "categoryId") Long category) {
 
         FindDeviceListResDTO deviceList = deviceService.findDeviceListByCategory(
                 FindDeviceListByCategoryReqDTO.builder()
@@ -60,8 +59,8 @@ public class DeviceRestController {
                         .build());
     }
 
-    @GetMapping("/find/category")
-    public ResponseEntity<FindCategoryResponseDTO> findCategory(){
+    @GetMapping("/categories")
+    public ResponseEntity<FindCategoryResponseDTO> findCategory() {
 
         List<Category> categories = categoryRepository.findAll();
 
@@ -72,33 +71,31 @@ public class DeviceRestController {
     }
 
 
-    @GetMapping("/find/mobile/info")
-    public ResponseEntity<FindDeviceInfoResponseDTO<MobileInfo>> findMobileInfo(@RequestParam String detailId){
+    @GetMapping("/mobile/{deviceId}")
+    public ResponseEntity<FindDeviceInfoResponseDTO<MobileInfo>> findMobileInfo
+            (@PathVariable(name = "deviceId") String detailId) {
 
         FindDeviceInfoResDTO<MobileInfo> deviceInfo =
-                deviceService.findMobileInfo( FindDeviceInfoReqDTO.builder()
-                                                .detailId(detailId).build());
+                deviceService.findMobileInfo(FindDeviceInfoReqDTO.builder()
+                        .detailId(detailId).build());
 
         return ResponseEntity.ok(FindDeviceInfoResponseDTO.<MobileInfo>builder()
-                        .info(deviceInfo.getInfo())
-                        .build());
+                .info(deviceInfo.getInfo())
+                .build());
     }
 
-    @GetMapping("/find/laptop/info")
-    public ResponseEntity<FindDeviceInfoResponseDTO<LaptopInfo>> findLaptopInfo(@RequestParam String detailId){
+    @GetMapping("/laptop/{deviceId}")
+    public ResponseEntity<FindDeviceInfoResponseDTO<LaptopInfo>> findLaptopInfo
+            (@PathVariable(name = "deviceId") String detailId) {
 
         FindDeviceInfoResDTO<LaptopInfo> deviceInfo =
-                deviceService.findLaptopInfo( FindDeviceInfoReqDTO.builder()
+                deviceService.findLaptopInfo(FindDeviceInfoReqDTO.builder()
                         .detailId(detailId).build());
 
         return ResponseEntity.ok(FindDeviceInfoResponseDTO.<LaptopInfo>builder()
                 .info(deviceInfo.getInfo())
                 .build());
     }
-
-
-
-
 
 
 }

@@ -5,6 +5,8 @@ import itgo.it_secondhand.service.post.DTO.FindPostResDTO;
 import itgo.it_secondhand.service.search.DTO.*;
 import itgo.it_secondhand.service.search.SearchService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/search")
+@RequestMapping("/api/v2")
 @RequiredArgsConstructor
 public class SearchRestController {
 
@@ -23,16 +25,17 @@ public class SearchRestController {
     // 전용 응답 DTO로 변환하여 HTTP Response 할 수 있도록 하자.
 
 
-    @GetMapping("/keyword")
-    public ResponseEntity<FindPostResDTO> keywordSearch(@RequestParam Long memberId, @RequestParam String keyword
-            , @RequestParam int page, @RequestParam int size, @RequestParam SortBy sortBy){
+    @GetMapping("/posts/search")
+    public ResponseEntity<FindPostResDTO> keywordSearch
+            (@RequestParam Long memberId, @RequestParam String keyword,
+             @PageableDefault(page = 0, size = 10) Pageable pageable){
 
         SearchReqDTO reqDTO = SearchReqDTO.builder()
                 .memberId(memberId)
                 .keyword(keyword)
-                .page(page)
-                .size(size)
-                .sortBy(sortBy)
+                .page(pageable.getPageNumber())
+                .size(pageable.getPageSize())
+                .sortBy(SortBy.RECENT_POST)
                 .build();
 
         FindPostResDTO responseDTO = searchService.keywordSearch(reqDTO);
@@ -40,15 +43,16 @@ public class SearchRestController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    @GetMapping("/recent/searches")
-    public ResponseEntity<RecentSearchResDTO> recentSearches(@RequestParam Long memberId
-            , @RequestParam int page, @RequestParam int size, @RequestParam SortBy sortBy){
+    @GetMapping("/search/recent")
+    public ResponseEntity<RecentSearchResDTO> recentSearches
+            (@RequestParam Long memberId,
+             @PageableDefault(page = 0, size = 10) Pageable pageable){
 
         RecentSearchReqDTO reqDTO = RecentSearchReqDTO.builder()
                 .memberId(memberId)
-                .page(page)
-                .size(size)
-                .sortBy(sortBy).build();
+                .page(pageable.getPageNumber())
+                .size(pageable.getPageSize())
+                .sortBy(SortBy.RECENT_SEARCH).build();
 
         RecentSearchResDTO responseDTO = searchService.recentSearches(reqDTO);
 
@@ -56,12 +60,13 @@ public class SearchRestController {
     }
 
 
-    @GetMapping("/ranking")
-    public ResponseEntity<RankResDTO> ranking(@RequestParam int page, @RequestParam int size){
+    @GetMapping("/posts/ranking")
+    public ResponseEntity<RankResDTO> ranking
+            (@PageableDefault(page = 0, size = 10) Pageable pageable){
 
         RankReqDTO reqDTO = RankReqDTO.builder()
-                .page(page)
-                .size(size)
+                .page(pageable.getPageNumber())
+                .size(pageable.getPageSize())
                 .build();
 
         RankResDTO responseDTO = searchService.getRanking(reqDTO);

@@ -5,14 +5,13 @@ import itgo.it_secondhand.enum_.SortBy;
 import itgo.it_secondhand.service.post.DTO.*;
 import itgo.it_secondhand.service.post.ScrapingPostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/post")
+@RequestMapping("/api/v2/posts")
 @RequiredArgsConstructor
 public class PostRestController {
 
@@ -24,14 +23,15 @@ public class PostRestController {
     // 전용 응답 DTO로 변환하여 HTTP Response 할 수 있도록 하자.
 
 
-    @GetMapping("/find/all/list")
-    public ResponseEntity<FindPostResDTO> findPostList(@RequestParam Long memberId
-            , @RequestParam int page, @RequestParam int size,@RequestParam  SortBy sortBy){
+    @GetMapping
+    public ResponseEntity<FindPostResDTO> findPostList
+            (@RequestParam Long memberId,
+             @PageableDefault(page = 0, size = 10) Pageable pageable) {
 
         FindPostReqDTO reqDTO = FindPostReqDTO.builder()
-                .page(page)
-                .size(size)
-                .sortBy(sortBy)
+                .page(pageable.getPageNumber())
+                .size(pageable.getPageSize())
+                .sortBy(SortBy.RECENT_POST)
                 .memberId(memberId)
                 .build();
 
@@ -40,24 +40,13 @@ public class PostRestController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    @GetMapping("/find/like/list")
-    public ResponseEntity<FindPostResDTO> findLikedPostList(@RequestParam Long memberId
-            , @RequestParam int page, @RequestParam int size, @RequestParam SortBy sortBy){
 
-        FindPostReqDTO reqDTO = FindPostReqDTO.builder()
-                .page(page)
-                .size(size)
-                .sortBy(sortBy)
-                .memberId(memberId)
-                .build();
 
-        FindPostResDTO responseDTO = scrapingPostService.findLikeScrapingPostList(reqDTO);
-
-        return ResponseEntity.ok(responseDTO);
-    }
-
-    @GetMapping("/view")
-    public ResponseEntity<ScrapedPostViewResDTO> viewPost(@RequestParam Long memberId, @RequestParam Long postId){
+    @GetMapping("{postId}")
+    public ResponseEntity<ScrapedPostViewResDTO> viewPost
+            (@PathVariable(name = "postId") Long postId,
+             @RequestParam Long memberId,
+             @PageableDefault(page = 0, size = 10) Pageable pageable) {
 
         PostViewReqDTO reqDTO = PostViewReqDTO.builder()
                 .memberId(memberId)
@@ -69,14 +58,15 @@ public class PostRestController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    @GetMapping("/find/by/category")
-    public ResponseEntity<FindPostResDTO> findPostByCategory(@RequestParam Long categoryId, @RequestParam Long memberId,
-                            @RequestParam int size, @RequestParam int page, @RequestParam SortBy sortBy){
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<FindPostResDTO> findPostByCategory
+            (@PathVariable(name = "categoryId") Long categoryId, @RequestParam Long memberId,
+             @PageableDefault(page = 0, size = 10) Pageable pageable) {
 
         FindPostByCategoryReqDTO reqDTO = FindPostByCategoryReqDTO.builder()
                 .categoryId(categoryId)
                 .memberId(memberId)
-                .size(size).page(page).sortBy(sortBy)
+                .size(pageable.getPageSize()).page(pageable.getPageNumber()).sortBy(SortBy.RECENT_POST)
                 .build();
 
         FindPostResDTO scrapingPostListByCategory = scrapingPostService.findScrapingPostListByCategory(reqDTO);
@@ -88,14 +78,16 @@ public class PostRestController {
                         .build());
     }
 
-    @GetMapping("/find/by/city")
-    public ResponseEntity<FindPostResDTO> findPostByLocation(@RequestParam String city, @RequestParam Long memberId,
-                                                             @RequestParam int size, @RequestParam int page, @RequestParam SortBy sortBy){
+    @GetMapping("/location/{locationId}")
+    public ResponseEntity<FindPostResDTO> findPostByLocation
+            (@PathVariable(name = "locationId") String city,
+             @RequestParam Long memberId,
+             @PageableDefault(page = 0, size = 10) Pageable pageable) {
 
         FindPostByLocationReqDTO reqDTO = FindPostByLocationReqDTO.builder()
                 .city(city)
                 .memberId(memberId)
-                .size(size).page(page).sortBy(sortBy)
+                .size(pageable.getPageSize()).page(pageable.getPageNumber()).sortBy(SortBy.RECENT_POST)
                 .build();
 
         FindPostResDTO scrapingPostListByCategory = scrapingPostService.findScrapingPostListByLocation(reqDTO);
@@ -106,7 +98,6 @@ public class PostRestController {
                         .hasNext(scrapingPostListByCategory.getHasNext())
                         .build());
     }
-
 
 
 }
