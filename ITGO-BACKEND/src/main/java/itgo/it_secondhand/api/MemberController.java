@@ -1,6 +1,6 @@
 package itgo.it_secondhand.api;
 
-import itgo.it_secondhand.api.DTO.FetchMemberProfileResponseDTO;
+import itgo.it_secondhand.api.DTO.Member.FetchMemberProfileResponseDTO;
 import itgo.it_secondhand.api.DTO.Member.MemberDTO;
 import itgo.it_secondhand.api.DTO.ResponseDTO;
 import itgo.it_secondhand.domain.Member;

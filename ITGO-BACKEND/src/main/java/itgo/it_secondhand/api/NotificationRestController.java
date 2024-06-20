@@ -1,8 +1,6 @@
 package itgo.it_secondhand.api;
 
 import itgo.it_secondhand.api.DTO.ResponseDTO;
-import itgo.it_secondhand.api.DTO.notification.DeleteNotificationResponseDTO;
-import itgo.it_secondhand.api.DTO.notification.FindNotificationResponseDTO;
 import itgo.it_secondhand.service.notification.DTO.CheckNotificationReqDTO;
 import itgo.it_secondhand.service.notification.DTO.CheckNotificationResDTO;
 import itgo.it_secondhand.service.notification.DTO.ManageNotificationReqDTO;
@@ -34,11 +32,7 @@ public class NotificationRestController {
 
         CheckNotificationResDTO notificationList = notificationService.findNotificationList(findReqDTO);
 
-        FindNotificationResponseDTO responseDTO = FindNotificationResponseDTO.builder()
-                .notificationList(notificationList.getNotificationMessageList())
-                .build();
-
-        return ResponseEntity.ok().body(success(responseDTO));
+        return ResponseEntity.ok().body(success(notificationList));
     }
 
     @DeleteMapping("/{notificationId}")
@@ -53,11 +47,7 @@ public class NotificationRestController {
 
         notificationService.deleteNotification(deleteReqDTO);
 
-        DeleteNotificationResponseDTO responseDTO = DeleteNotificationResponseDTO.builder()
-                .msg("정상적으로 삭제되었습니다.")
-                .build();
-
-        return ResponseEntity.ok().body(success(responseDTO));
+        return ResponseEntity.ok().body(success());
     }
 
     @DeleteMapping
@@ -70,11 +60,7 @@ public class NotificationRestController {
 
         notificationService.deleteAllNotification(deleteReqDTO);
 
-        DeleteNotificationResponseDTO responseDTO = DeleteNotificationResponseDTO.builder()
-                .msg("정상적으로 삭제되었습니다.")
-                .build();
-
-        return ResponseEntity.ok().body(success(responseDTO));
+        return ResponseEntity.ok().body(success());
     }
 
 

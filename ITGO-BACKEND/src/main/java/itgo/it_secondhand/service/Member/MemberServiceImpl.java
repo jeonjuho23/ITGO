@@ -1,7 +1,7 @@
 package itgo.it_secondhand.service.Member;
 
 
-import itgo.it_secondhand.api.DTO.FetchMemberProfileResponseDTO;
+import itgo.it_secondhand.api.DTO.Member.FetchMemberProfileResponseDTO;
 import itgo.it_secondhand.api.DTO.Member.MemberDTO;
 import itgo.it_secondhand.domain.Member;
 import itgo.it_secondhand.exception.CustomExceptionCode;

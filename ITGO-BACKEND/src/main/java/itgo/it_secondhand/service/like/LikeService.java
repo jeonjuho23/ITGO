@@ -7,10 +7,10 @@ import java.util.List;
 
 public interface LikeService<T,F> {
 
-    public Long regist(LikeReqDTO<F> likeReqDTO);
+    Long regist(LikeReqDTO<F> likeReqDTO);
 
-    public void delete(LikeReqDTO<Long> likeReqDTO);
+    void delete(LikeReqDTO<Long> likeReqDTO);
 
-    public List<T> checkList(Long memberId);
+    List<T> checkList(Long memberId);
 
 }

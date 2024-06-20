@@ -43,9 +43,9 @@ public class DeviceLikeServiceImpl implements LikeService<DeviceLikeResDTO, Long
         MemberLikeDevice memberLikeDevice = MemberLikeDevice.createMemberLikeDevice(member, device);
 
         // 저장
-        memberLikeDeviceRepository.save(memberLikeDevice);
+        MemberLikeDevice save = memberLikeDeviceRepository.save(memberLikeDevice);
 
-        return memberLikeDevice.getId();
+        return save.getId();
     }
 
     @Transactional
@@ -90,13 +90,13 @@ public class DeviceLikeServiceImpl implements LikeService<DeviceLikeResDTO, Long
 
         if (deviceList.isEmpty()) throw new RestApiException(CustomExceptionCode.NO_LIKE_LIST);
 
-        List<DeviceResDTO> res = new ArrayList<>();
+        List<DeviceResDTO> deviceResDTO = new ArrayList<>();
         for(Device device: deviceList){
-            res.add(DeviceResDTO.builder()
+            deviceResDTO.add(DeviceResDTO.builder()
                     .id(device.getId())
                     .deviceName(device.getDeviceName()).build());
         }
 
-        return res;
+        return deviceResDTO;
     }
 }

@@ -47,8 +47,7 @@ public class PostRestController {
     @GetMapping("{postId}")
     public ResponseEntity<ResponseDTO<?>> viewPost
             (@PathVariable(name = "postId") Long postId,
-             @RequestParam Long memberId,
-             @PageableDefault(page = 0, size = 10) Pageable pageable) {
+             @RequestParam Long memberId) {
 
         PostViewReqDTO reqDTO = PostViewReqDTO.builder()
                 .memberId(memberId)
@@ -80,9 +79,9 @@ public class PostRestController {
         return ResponseEntity.ok().body(success(findPostResDTO));
     }
 
-    @GetMapping("/location/{locationId}")
+    @GetMapping("/location/{city}")
     public ResponseEntity<ResponseDTO<?>> findPostByLocation
-            (@PathVariable(name = "locationId") String city,
+            (@PathVariable(name = "city") String city,
              @RequestParam Long memberId,
              @PageableDefault(page = 0, size = 10) Pageable pageable) {
 

@@ -39,17 +39,20 @@ public class PostLikeServiceImpl implements LikeService<PostResDTO, Long> {
         MemberLikePost memberLikePost = MemberLikePost.createMemberLikePost(member, post);
 
         // 저장
-        memberLikePostRepository.save(memberLikePost);
+        MemberLikePost save = memberLikePostRepository.save(memberLikePost);
 
-        return memberLikePost.getId();
+        return save.getId();
     }
 
     @Transactional
     @Override
     public void delete(LikeReqDTO<Long> likeReqDTO) {
         // 엔티티 조회
-        Member member = memberRepository.findById(likeReqDTO.getMemberId()).orElseThrow();
-        Post post = postRepository.findById(likeReqDTO.getLikedThingId()).orElseThrow();
+        Member member = memberRepository.findById(likeReqDTO.getMemberId())
+                .orElseThrow(() -> new RestApiException(CustomExceptionCode.MEMBER_NOT_FOUND));
+        Post post = postRepository.findById(likeReqDTO.getLikedThingId())
+                .orElseThrow(() -> new RestApiException(CustomExceptionCode.POST_NOT_FOUND));
+
         MemberLikePost memberLikePost = memberLikePostRepository.findByMemberAndPost(member, post);
 
         // 좋아요 삭제
@@ -57,7 +60,6 @@ public class PostLikeServiceImpl implements LikeService<PostResDTO, Long> {
 
         // 좋아요 카운트 감소
         post.reduceLikeCount();
-
     }
 
     @Override

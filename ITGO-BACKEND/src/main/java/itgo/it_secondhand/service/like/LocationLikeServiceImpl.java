@@ -43,9 +43,9 @@ public class LocationLikeServiceImpl implements LikeService<LocationResDTO<Long>
         MemberLikeLocation memberLikeLocation =
                 MemberLikeLocation.createMemberLikeLocation(location.getLocation(), member);
 
-        memberLikeLocationRepository.save(memberLikeLocation);
+        MemberLikeLocation save = memberLikeLocationRepository.save(memberLikeLocation);
 
-        return memberLikeLocation.getId();
+        return save.getId();
     }
 
     @Transactional

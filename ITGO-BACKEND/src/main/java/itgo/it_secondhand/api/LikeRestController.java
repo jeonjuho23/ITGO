@@ -1,7 +1,6 @@
 package itgo.it_secondhand.api;
 
 import itgo.it_secondhand.api.DTO.ResponseDTO;
-import itgo.it_secondhand.api.DTO.like.DeleteLikeResponseDTO;
 import itgo.it_secondhand.api.DTO.like.RegistLikeResponseDTO;
 import itgo.it_secondhand.enum_.SortBy;
 import itgo.it_secondhand.service.like.DTO.DeviceResDTO;
@@ -80,7 +79,9 @@ public class LikeRestController {
              @RequestBody @NotNull  String locationId){
 
         LikeReqDTO<String> reqDTO = LikeReqDTO.<String>builder()
-                .memberId(memberId).likedThingId(locationId).build();
+                .memberId(memberId)
+                .likedThingId(locationId)
+                .build();
         Long registId = locationLikeService.regist(reqDTO);
 
         RegistLikeResponseDTO responseDTO = RegistLikeResponseDTO.builder()
@@ -92,10 +93,10 @@ public class LikeRestController {
 
     //==  Delete  ==//
 
-    @DeleteMapping("/devices")
+    @DeleteMapping("/devices/{deviceID}")
     public ResponseEntity<ResponseDTO<?>> deleteDevice
             (@PathVariable(name = "memberId") Long memberId,
-             @RequestParam Long deviceId){
+             @PathVariable(name = "deviceID") Long deviceId){
 
         LikeReqDTO<Long> reqDTO = LikeReqDTO.<Long>builder()
                 .memberId(memberId)
@@ -103,17 +104,13 @@ public class LikeRestController {
                 .build();
         deviceLikeService.delete(reqDTO);
 
-        DeleteLikeResponseDTO responseDTO = DeleteLikeResponseDTO.builder()
-                .msg("성공적으로 삭제되었습니다.")
-                .build();
-
-        return ResponseEntity.ok().body(success(responseDTO));
+        return ResponseEntity.ok().body(success());
     }
 
-    @DeleteMapping("/posts")
+    @DeleteMapping("/posts/{postId}")
     public ResponseEntity<ResponseDTO<?>> deletePost
             (@PathVariable(name = "memberId") Long memberId,
-             @RequestParam Long postId){
+             @PathVariable(name = "postId") Long postId){
 
         LikeReqDTO<Long> reqDTO = LikeReqDTO.<Long>builder()
                 .memberId(memberId)
@@ -121,27 +118,20 @@ public class LikeRestController {
                 .build();
         postLikeService.delete(reqDTO);
 
-        DeleteLikeResponseDTO responseDTO = DeleteLikeResponseDTO.builder()
-                .msg("성공적으로 삭제되었습니다.")
-                .build();
-
-        return ResponseEntity.ok().body(success(responseDTO));
+        return ResponseEntity.ok().body(success());
     }
 
-    @DeleteMapping("/locations")
+    @DeleteMapping("/locations/{likeId}")
     public ResponseEntity<ResponseDTO<?>> deleteLocation
             (@PathVariable(name = "memberId") Long memberId,
-             @RequestParam Long locationId){
+             @PathVariable(name = "likeId") Long likeId){
 
         LikeReqDTO<Long> reqDTO = LikeReqDTO.<Long>builder()
                 .memberId(memberId)
-                .likedThingId(locationId).build();
+                .likedThingId(likeId).build();
         locationLikeService.delete(reqDTO);
 
-        DeleteLikeResponseDTO responseDTO = DeleteLikeResponseDTO.builder()
-                .msg("성공적으로 삭제되었습니다.").build();
-
-        return ResponseEntity.ok().body(success(responseDTO));
+        return ResponseEntity.ok().body(success());
     }
 
 

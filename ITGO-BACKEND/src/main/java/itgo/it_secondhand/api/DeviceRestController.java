@@ -1,7 +1,6 @@
 package itgo.it_secondhand.api;
 
 import itgo.it_secondhand.api.DTO.ResponseDTO;
-import itgo.it_secondhand.api.DTO.device.FindCategoryResponseDTO;
 import itgo.it_secondhand.api.DTO.device.FindDeviceInfoResponseDTO;
 import itgo.it_secondhand.api.DTO.device.FindDeviceListResponseDTO;
 import itgo.it_secondhand.domain.Category;
@@ -70,16 +69,13 @@ public class DeviceRestController {
 
         List<Category> categories = categoryRepository.findAll();
 
-        FindCategoryResponseDTO findCategoryResponseDTO = FindCategoryResponseDTO.builder()
-                .categoryList(categories).build();
-
-        return ResponseEntity.ok().body(success(findCategoryResponseDTO));
+        return ResponseEntity.ok().body(success(categories));
     }
 
 
-    @GetMapping("/mobile/{deviceId}")
+    @GetMapping("/mobile/{detailId}")
     public ResponseEntity<ResponseDTO<?>> findMobileInfo
-            (@PathVariable(name = "deviceId") String detailId) {
+            (@PathVariable(name = "detailId") String detailId) {
 
         FindDeviceInfoResDTO<MobileInfo> deviceInfo =
                 deviceService.findMobileInfo(FindDeviceInfoReqDTO.builder()
@@ -91,9 +87,9 @@ public class DeviceRestController {
         return ResponseEntity.ok().body(success(findDeviceInfoResponseDTO));
     }
 
-    @GetMapping("/laptop/{deviceId}")
+    @GetMapping("/laptop/{detailId}")
     public ResponseEntity<ResponseDTO<?>> findLaptopInfo
-            (@PathVariable(name = "deviceId") String detailId) {
+            (@PathVariable(name = "detailId") String detailId) {
 
         FindDeviceInfoResDTO<LaptopInfo> deviceInfo =
                 deviceService.findLaptopInfo(FindDeviceInfoReqDTO.builder()
