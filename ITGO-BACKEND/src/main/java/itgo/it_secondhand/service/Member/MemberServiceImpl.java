@@ -1,6 +1,7 @@
 package itgo.it_secondhand.service.Member;
 
 
+import itgo.it_secondhand.api.DTO.FetchMemberProfileResponseDTO;
 import itgo.it_secondhand.api.DTO.Member.MemberDTO;
 import itgo.it_secondhand.domain.Member;
 import itgo.it_secondhand.exception.CustomExceptionCode;
@@ -10,11 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 @Slf4j
 @Service
-public class MemberServiceImpl implements MemberService{
+public class MemberServiceImpl implements MemberService {
 
     @Autowired
     MemberRepository memberRepository;
@@ -30,35 +29,40 @@ public class MemberServiceImpl implements MemberService{
 
         String userPhone = member.getPhone();
 
-        if(memberRepository.existsByPhone(userPhone)){
-            log.warn("User phoneNum already exists {}",userPhone);
-            final Member originalUser = memberRepository.findByPhone(userPhone);
+        if (memberRepository.existsByPhone(userPhone)) {
+            log.warn("User phoneNum already exists {}", userPhone);
+            Member originalUser = memberRepository.findByPhone(userPhone)
+                    .orElseThrow(() -> new RestApiException(CustomExceptionCode.MEMBER_NOT_FOUND));
             log.info("login successful");
-            if(originalUser != null){
-                return originalUser;
-            }
+            return originalUser;
         }
         return memberRepository.save(member);
     }
 
     @Override
-    public Member getByCredentials(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(()-> new RestApiException(CustomExceptionCode.MEMBER_NOT_FOUND));
+    public FetchMemberProfileResponseDTO getByCredentials(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RestApiException(CustomExceptionCode.MEMBER_NOT_FOUND));
+
+        return FetchMemberProfileResponseDTO.builder()
+                .memberId(member.getId())
+                .phone(member.getPhone())
+                .imgAddress(member.getImgAddress())
+                .location(member.getLocation())
+                .build();
     }
 
     @Override
-    public Member updateMember(MemberDTO memberDTO, String phone) {
-        Member userCheck=memberRepository.findByPhone(phone);
-        log.info("수정전 user: {}",userCheck);
-        Member user = Member.builder()
-                .phone(memberDTO.getPhone())
-                .name(memberDTO.getName())
-                .imgAddress(memberDTO.getImgAddress())
-                .location(memberDTO.getLocation())
+    public FetchMemberProfileResponseDTO updateMember(MemberDTO memberDTO, String phone) {
+        Member member = memberRepository.findByPhone(phone)
+                .orElseThrow(() -> new RestApiException(CustomExceptionCode.MEMBER_NOT_FOUND));
+        member.updateUser(memberDTO);
+
+        return FetchMemberProfileResponseDTO.builder()
+                .memberId(member.getId())
+                .phone(member.getPhone())
+                .imgAddress(member.getImgAddress())
+                .location(member.getLocation())
                 .build();
-        userCheck.updateUser(user);
-        memberRepository.save(userCheck);
-        return userCheck;
     }
 }

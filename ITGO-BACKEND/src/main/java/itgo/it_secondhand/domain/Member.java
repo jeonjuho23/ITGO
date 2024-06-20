@@ -1,20 +1,21 @@
 package itgo.it_secondhand.domain;
 
 
+import itgo.it_secondhand.api.DTO.Member.MemberDTO;
 import itgo.it_secondhand.domain.value.Location;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
 public class Member {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     @Column(name = "member_id")
     private Long id;
 
@@ -53,18 +54,18 @@ public class Member {
         return new Member(phone, name, imgAddress, location);
     }
 
-    public void updateUser(Member member) {
-        if(member.getPhone() != null){
-            this.phone=member.getPhone();
+    public void updateUser(MemberDTO memberDTO) {
+        if (memberDTO.getPhone() != null) {
+            this.phone = memberDTO.getPhone();
         }
-        if(member.getName() != null){
-            this.name=member.getName();
+        if (memberDTO.getName() != null) {
+            this.name = memberDTO.getName();
         }
-        if(member.getLocation() != null){
-            this.location=member.getLocation();
+        if (memberDTO.getLocation() != null) {
+            this.location = memberDTO.getLocation();
         }
-        if(member.getImgAddress() != null){
-            this.imgAddress=member.getImgAddress();
+        if (memberDTO.getImgAddress() != null) {
+            this.imgAddress = memberDTO.getImgAddress();
         }
     }
 
