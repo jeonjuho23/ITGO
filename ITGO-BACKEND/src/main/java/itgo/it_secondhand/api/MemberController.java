@@ -45,7 +45,7 @@ public class MemberController {
     public ResponseEntity<ResponseDTO<?>> updateProfile
             (@PathVariable(name = "memberId") Long memberId, @RequestBody MemberDTO memberDTO) {
         log.info("updateProfile 호출");
-        FetchMemberProfileResponseDTO response = memberService.updateMember(memberDTO, memberDTO.getPhone());
+        FetchMemberProfileResponseDTO response = memberService.updateMember(memberDTO, memberId);
         return ResponseEntity.ok().body(success(response));
     }
 

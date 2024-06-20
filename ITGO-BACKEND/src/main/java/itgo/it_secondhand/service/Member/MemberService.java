@@ -10,7 +10,7 @@ public interface MemberService {
 
     FetchMemberProfileResponseDTO getByCredentials(Long memberId);
 
-    FetchMemberProfileResponseDTO updateMember(MemberDTO memberDTO,String phone);
+    FetchMemberProfileResponseDTO updateMember(MemberDTO memberDTO, Long memberId);
 
 
 }

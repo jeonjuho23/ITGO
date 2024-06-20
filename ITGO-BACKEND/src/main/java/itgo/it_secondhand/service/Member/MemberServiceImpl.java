@@ -53,8 +53,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public FetchMemberProfileResponseDTO updateMember(MemberDTO memberDTO, String phone) {
-        Member member = memberRepository.findByPhone(phone)
+    public FetchMemberProfileResponseDTO updateMember(MemberDTO memberDTO, Long memberId) {
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RestApiException(CustomExceptionCode.MEMBER_NOT_FOUND));
         member.updateUser(memberDTO);
 
