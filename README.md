@@ -7,6 +7,7 @@
   - 무중단 배포
     - Nginx로 로드밸런싱하여 블루/그린 방식의 무중단 배포 파이프라인 구축
 - 2024.06
+  - [API 명세서](https://iamjeonjuho.notion.site/API-Doc-bc06ae45699542618be24db7850c249d?pvs=74) 작성
   - 적절한 HTTP 메서드와 URL 적용
   - 모든 응답 데이터를 json 객체 타입으로 반환하기 위해 공통 ResponseDTO<T>를 적용
   - 전역 예외처리 적용 
