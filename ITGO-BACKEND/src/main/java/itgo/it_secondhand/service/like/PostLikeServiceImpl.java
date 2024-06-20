@@ -3,6 +3,8 @@ package itgo.it_secondhand.service.like;
 import itgo.it_secondhand.domain.Member;
 import itgo.it_secondhand.domain.MemberLikePost;
 import itgo.it_secondhand.domain.Post;
+import itgo.it_secondhand.exception.CustomExceptionCode;
+import itgo.it_secondhand.exception.RestApiException;
 import itgo.it_secondhand.service.like.DTO.LikeReqDTO;
 import itgo.it_secondhand.service.post.DTO.PostResDTO;
 import itgo.it_secondhand.repository.MemberLikePostRepository;
@@ -21,8 +23,6 @@ public class PostLikeServiceImpl implements LikeService<PostResDTO, Long> {
 
     private final MemberRepository memberRepository;
     private final PostRepository<Post> postRepository;
-
-
     private final MemberLikePostRepository memberLikePostRepository;
 
 
@@ -30,8 +30,10 @@ public class PostLikeServiceImpl implements LikeService<PostResDTO, Long> {
     @Override
     public Long regist(LikeReqDTO<Long> likeReqDTO) {
         // 엔티티 조회
-        Member member = memberRepository.findById(likeReqDTO.getMemberId()).orElseThrow();
-        Post post = postRepository.findById(likeReqDTO.getLikedThingId()).orElseThrow();
+        Member member = memberRepository.findById(likeReqDTO.getMemberId())
+                .orElseThrow(() -> new RestApiException(CustomExceptionCode.MEMBER_NOT_FOUND));
+        Post post = postRepository.findById(likeReqDTO.getLikedThingId())
+                .orElseThrow(()-> new RestApiException(CustomExceptionCode.POST_NOT_FOUND));
 
         // 좋아요 생성
         MemberLikePost memberLikePost = MemberLikePost.createMemberLikePost(member, post);

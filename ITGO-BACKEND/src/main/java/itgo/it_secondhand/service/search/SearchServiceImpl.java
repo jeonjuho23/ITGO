@@ -2,6 +2,8 @@ package itgo.it_secondhand.service.search;
 
 import itgo.it_secondhand.domain.*;
 import itgo.it_secondhand.enum_.SortBy;
+import itgo.it_secondhand.exception.CustomExceptionCode;
+import itgo.it_secondhand.exception.RestApiException;
 import itgo.it_secondhand.repository.*;
 import itgo.it_secondhand.service.post.DTO.FindPostResDTO;
 import itgo.it_secondhand.service.post.ScrapingPostServiceImpl;
@@ -41,6 +43,7 @@ public class SearchServiceImpl implements SearchService {
         Slice<SecondhandScrapedPost> posts =
                 secondhandPostRepository.searchSecondhandPostByDeviceName(searchReqDTO.getKeyword().replace(" ", ""), pageable);
 
+        if (posts.isEmpty()) throw new RestApiException(CustomExceptionCode.PAGE_NOT_FOUND);
 
         // 키워드 검색 연관 기능
         Keyword dbKeyword = keywordRepository.findByKeyword(searchReqDTO.getKeyword());
@@ -50,7 +53,8 @@ public class SearchServiceImpl implements SearchService {
             keywordRepository.save(dbKeyword);
         }
 
-        Member member = memberRepository.findById(searchReqDTO.getMemberId()).get();
+        Member member = memberRepository.findById(searchReqDTO.getMemberId())
+                .orElseThrow(() -> new RestApiException(CustomExceptionCode.MEMBER_NOT_FOUND));
 
         MemberSearchKeyword memberSearchKeyword = memberSearchKeywordRepository.findByMember_IdAndKeyword_Id(searchReqDTO.getMemberId(), dbKeyword.getId());
         if(memberSearchKeyword == null){
@@ -73,6 +77,8 @@ public class SearchServiceImpl implements SearchService {
 
         // 조회
         Slice<MemberSearchKeyword> memberSearchKeywords = memberSearchKeywordRepository.findSliceByMember_Id(recentSearchReqDTO.getMemberId(), pageable);
+
+        if (memberSearchKeywords.isEmpty()) throw new RestApiException(CustomExceptionCode.PAGE_NOT_FOUND);
 
         List<String> keywordList = new ArrayList<>();
         for(MemberSearchKeyword memberSearchKeyword : memberSearchKeywords.getContent()){

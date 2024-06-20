@@ -3,6 +3,8 @@ package itgo.it_secondhand.service.Member;
 
 import itgo.it_secondhand.api.DTO.Member.MemberDTO;
 import itgo.it_secondhand.domain.Member;
+import itgo.it_secondhand.exception.CustomExceptionCode;
+import itgo.it_secondhand.exception.RestApiException;
 import itgo.it_secondhand.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +28,7 @@ public class MemberServiceImpl implements MemberService{
                 .location(memberDTO.getLocation())
                 .build();
 
-        if(member == null || member.getPhone() ==null){
-            throw new RuntimeException("Invalid arguments");
-        }
-        final String userPhone = member.getPhone();
+        String userPhone = member.getPhone();
 
         if(memberRepository.existsByPhone(userPhone)){
             log.warn("User phoneNum already exists {}",userPhone);
@@ -39,13 +38,13 @@ public class MemberServiceImpl implements MemberService{
                 return originalUser;
             }
         }
-        member.setName(UUID.randomUUID().toString());
         return memberRepository.save(member);
     }
 
     @Override
     public Member getByCredentials(Long memberId) {
-        return memberRepository.findById(memberId).orElseThrow();
+        return memberRepository.findById(memberId)
+                .orElseThrow(()-> new RestApiException(CustomExceptionCode.MEMBER_NOT_FOUND));
     }
 
     @Override

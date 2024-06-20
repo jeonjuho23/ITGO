@@ -2,6 +2,8 @@ package itgo.it_secondhand.service.post;
 
 
 import itgo.it_secondhand.domain.*;
+import itgo.it_secondhand.exception.CustomExceptionCode;
+import itgo.it_secondhand.exception.RestApiException;
 import itgo.it_secondhand.repository.*;
 import itgo.it_secondhand.service.post.DTO.*;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +29,10 @@ public class ScrapingPostServiceImpl implements ScrapingPostService {
     @Override
     public ScrapedPostViewResDTO viewScrapingPost(PostViewReqDTO postViewReqDTO) {
         // 엔티티 조회
-        Member member = memberRepository.findById(postViewReqDTO.getMemberId()).orElseThrow();
-        SecondhandScrapedPost secondhandScrapedPost = secondhandPostRepository.findById(postViewReqDTO.getPostId()).orElseThrow();
+        Member member = memberRepository.findById(postViewReqDTO.getMemberId())
+                .orElseThrow(() -> new RestApiException(CustomExceptionCode.MEMBER_NOT_FOUND));
+        SecondhandScrapedPost secondhandScrapedPost = secondhandPostRepository.findById(postViewReqDTO.getPostId())
+                .orElseThrow(() -> new RestApiException(CustomExceptionCode.POST_NOT_FOUND));
 
 
         // 첫 조회면 데이터 생성
@@ -54,20 +58,25 @@ public class ScrapingPostServiceImpl implements ScrapingPostService {
     public FindPostResDTO findALlScrapingPostList(FindPostReqDTO findPostReqDTO) {
 
         // pageable 구현체 생성
-        Pageable pageable = PageRequest.of(findPostReqDTO.getPage(), findPostReqDTO.getSize(), Sort.by(findPostReqDTO.getSortBy().label()));
+        Pageable pageable =
+                PageRequest.of(findPostReqDTO.getPage(), findPostReqDTO.getSize(), Sort.by(findPostReqDTO.getSortBy().label()));
 
         // 조회
         Slice<SecondhandScrapedPost> posts = secondhandPostRepository.findSliceBy(pageable);
 
+        if (posts.isEmpty()) throw new RestApiException(CustomExceptionCode.PAGE_NOT_FOUND);
+
         // res 변환
-        Member member = memberRepository.findById(findPostReqDTO.getMemberId()).orElseThrow();
+        Member member = memberRepository.findById(findPostReqDTO.getMemberId())
+                .orElseThrow(() -> new RestApiException(CustomExceptionCode.MEMBER_NOT_FOUND));
 //        Member platform = memberRepository.findBy
         return setFindPostDTO(member, posts);
     }
 
     @Override
     public FindPostResDTO findLikeScrapingPostList(FindPostReqDTO findPostReqDTO) {
-        Member member = memberRepository.findById(findPostReqDTO.getMemberId()).orElseThrow();
+        Member member = memberRepository.findById(findPostReqDTO.getMemberId())
+                .orElseThrow(() -> new RestApiException(CustomExceptionCode.MEMBER_NOT_FOUND));
 
         // pageable 구현체 생성
         Pageable pageable = PageRequest.of(findPostReqDTO.getPage(), findPostReqDTO.getSize(), Sort.by(findPostReqDTO.getSortBy().label()));
@@ -75,9 +84,9 @@ public class ScrapingPostServiceImpl implements ScrapingPostService {
         // 조회
         Slice<SecondhandScrapedPost> likePosts = secondhandPostRepository.findLikePostByMember_Id(findPostReqDTO.getMemberId(), pageable);
 
+        if(likePosts.isEmpty()) throw new RestApiException(CustomExceptionCode.PAGE_NOT_FOUND);
+
         // res 변환
-
-
         return setFindPostDTO(member, likePosts);
     }
 
@@ -86,9 +95,12 @@ public class ScrapingPostServiceImpl implements ScrapingPostService {
         // pageable 구현체 생성
         Pageable pageable = PageRequest.of(findPostByCategoryReqDTO.getPage(), findPostByCategoryReqDTO.getSize(), Sort.by(findPostByCategoryReqDTO.getSortBy().label()));
 
-        Member member = memberRepository.findById(findPostByCategoryReqDTO.getMemberId()).orElseThrow();
+        Member member = memberRepository.findById(findPostByCategoryReqDTO.getMemberId())
+                .orElseThrow(() -> new RestApiException(CustomExceptionCode.MEMBER_NOT_FOUND));
 
         Slice<SecondhandScrapedPost> posts = secondhandPostRepository.findByDevice_Category_Id(findPostByCategoryReqDTO.getCategoryId(), pageable);
+
+        if (posts.isEmpty()) throw new RestApiException(CustomExceptionCode.PAGE_NOT_FOUND);
 
         return setFindPostDTO(member, posts);
     }
@@ -98,9 +110,12 @@ public class ScrapingPostServiceImpl implements ScrapingPostService {
         // pageable 구현체 생성
         Pageable pageable = PageRequest.of(findPostByLocationReqDTO.getPage(), findPostByLocationReqDTO.getSize(), Sort.by(findPostByLocationReqDTO.getSortBy().label()));
 
-        Member member = memberRepository.findById(findPostByLocationReqDTO.getMemberId()).orElseThrow();
+        Member member = memberRepository.findById(findPostByLocationReqDTO.getMemberId())
+                .orElseThrow(() -> new RestApiException(CustomExceptionCode.MEMBER_NOT_FOUND));
 
         Slice<SecondhandScrapedPost> posts = secondhandPostRepository.findByLocation_City(findPostByLocationReqDTO.getCity(), pageable);
+
+        if (posts.isEmpty()) throw new RestApiException(CustomExceptionCode.PAGE_NOT_FOUND);
 
         return setFindPostDTO(member, posts);
     }

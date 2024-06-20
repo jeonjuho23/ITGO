@@ -2,6 +2,8 @@ package itgo.it_secondhand.service.notification;
 
 import itgo.it_secondhand.domain.Notification;
 import itgo.it_secondhand.domain.NotificationMessage;
+import itgo.it_secondhand.exception.CustomExceptionCode;
+import itgo.it_secondhand.exception.RestApiException;
 import itgo.it_secondhand.repository.NotificationRepository;
 import itgo.it_secondhand.service.notification.DTO.*;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +26,10 @@ public class NotificationServiceImpl implements NotificationService{
         Notification notification = notificationRepository.findByMemberId(checkNotificationReqDTO.getMemberId());
 
         List<NotificationMessage> notificationMessageList = notification.getMessages();
-        List<String> messages = new ArrayList<>();
 
+        if (notificationMessageList.isEmpty()) throw new RestApiException(CustomExceptionCode.NO_NOTIFICATION_LIST);
+
+        List<String> messages = new ArrayList<>();
         for(NotificationMessage notificationMessage : notificationMessageList){
             messages.add(notificationMessage.getMessage());
         }

@@ -3,6 +3,8 @@ package itgo.it_secondhand.service.device;
 import itgo.it_secondhand.domain.Device;
 import itgo.it_secondhand.domain.LaptopInfo;
 import itgo.it_secondhand.domain.MobileInfo;
+import itgo.it_secondhand.exception.CustomExceptionCode;
+import itgo.it_secondhand.exception.RestApiException;
 import itgo.it_secondhand.repository.LaptopInfoRepository;
 import itgo.it_secondhand.repository.DeviceRepository;
 import itgo.it_secondhand.repository.MobileInfoRepository;
@@ -36,6 +38,8 @@ public class DeviceServiceImpl implements DeviceService{
         Pageable pageable = PageRequest.of(findDeviceListReqDTO.getPage(), findDeviceListReqDTO.getSize());
         Slice<Device> deviceSlice = deviceRepository.findSliceBy(pageable);
 
+        if (deviceSlice.isEmpty()) throw new RestApiException(CustomExceptionCode.PAGE_NOT_FOUND);
+
         return getFindDeviceListResDTO(deviceSlice);
     }
 
@@ -45,6 +49,8 @@ public class DeviceServiceImpl implements DeviceService{
         Pageable pageable = PageRequest.of(findDeviceListByCategoryReqDTO.getPage(), findDeviceListByCategoryReqDTO.getSize());
         Slice<Device> deviceSlice = deviceRepository.findSliceByCategory_Id(pageable, findDeviceListByCategoryReqDTO.getCategory());
 
+        if (deviceSlice.isEmpty()) throw new RestApiException(CustomExceptionCode.PAGE_NOT_FOUND);
+
         return getFindDeviceListResDTO(deviceSlice);
     }
 
@@ -53,7 +59,8 @@ public class DeviceServiceImpl implements DeviceService{
         for (Device device: deviceSlice.getContent()){
             String image = "";
             if(device.getDetailId() != null) {
-                MobileInfo mobileInfo = mobileInfoRepository.findById(device.getDetailId()).orElse(MobileInfo.builder().build());
+                MobileInfo mobileInfo = mobileInfoRepository.findById(device.getDetailId())
+                        .orElse(MobileInfo.builder().build());
                 image = mobileInfo.getImage();
             }
             findDeviceList.add(new FindDeviceDTO(device, image));
@@ -68,7 +75,8 @@ public class DeviceServiceImpl implements DeviceService{
     @Override
     public FindDeviceInfoResDTO<MobileInfo> findMobileInfo(FindDeviceInfoReqDTO findDeviceInfoReqDTO) {
 
-        MobileInfo mobileInfo = mobileInfoRepository.findById(findDeviceInfoReqDTO.getDetailId()).orElseThrow();
+        MobileInfo mobileInfo = mobileInfoRepository.findById(findDeviceInfoReqDTO.getDetailId())
+                .orElseThrow(()-> new RestApiException(CustomExceptionCode.DEVICE_NOT_FOUND));
 
         return FindDeviceInfoResDTO.<MobileInfo>builder()
                 .info(mobileInfo).build();
@@ -77,7 +85,8 @@ public class DeviceServiceImpl implements DeviceService{
     @Override
     public FindDeviceInfoResDTO<LaptopInfo> findLaptopInfo(FindDeviceInfoReqDTO findDeviceInfoReqDTO) {
 
-        LaptopInfo laptopInfo = laptopInfoRepository.findById(findDeviceInfoReqDTO.getDetailId()).orElseThrow();
+        LaptopInfo laptopInfo = laptopInfoRepository.findById(findDeviceInfoReqDTO.getDetailId())
+                .orElseThrow(()-> new RestApiException(CustomExceptionCode.DEVICE_NOT_FOUND));
 
         return FindDeviceInfoResDTO.<LaptopInfo>builder()
                 .info(laptopInfo).build();

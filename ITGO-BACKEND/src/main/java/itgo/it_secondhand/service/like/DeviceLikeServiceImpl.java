@@ -4,6 +4,8 @@ package itgo.it_secondhand.service.like;
 import itgo.it_secondhand.domain.Device;
 import itgo.it_secondhand.domain.Member;
 import itgo.it_secondhand.domain.MemberLikeDevice;
+import itgo.it_secondhand.exception.CustomExceptionCode;
+import itgo.it_secondhand.exception.RestApiException;
 import itgo.it_secondhand.service.like.DTO.DeviceLikeResDTO;
 import itgo.it_secondhand.service.like.DTO.DeviceResDTO;
 import itgo.it_secondhand.service.like.DTO.LikeReqDTO;
@@ -32,8 +34,10 @@ public class DeviceLikeServiceImpl implements LikeService<DeviceLikeResDTO, Long
     public Long regist(LikeReqDTO<Long> likeReqDTO) {
 
         // 엔티티 조회
-        Member member = memberRepository.findById(likeReqDTO.getMemberId()).orElseThrow();
-        Device device = deviceRepository.findById(likeReqDTO.getLikedThingId()).orElseThrow();
+        Member member = memberRepository.findById(likeReqDTO.getMemberId())
+                .orElseThrow(()-> new RestApiException(CustomExceptionCode.MEMBER_NOT_FOUND));
+        Device device = deviceRepository.findById(likeReqDTO.getLikedThingId())
+                .orElseThrow(()-> new RestApiException(CustomExceptionCode.DEVICE_NOT_FOUND));
 
         // 좋아요 생성
         MemberLikeDevice memberLikeDevice = MemberLikeDevice.createMemberLikeDevice(member, device);
@@ -48,8 +52,10 @@ public class DeviceLikeServiceImpl implements LikeService<DeviceLikeResDTO, Long
     @Override
     public void  delete(LikeReqDTO<Long> likeReqDTO) {
         // 엔티티 조회
-        Member member = memberRepository.findById(likeReqDTO.getMemberId()).orElseThrow();
-        Device device = deviceRepository.findById(likeReqDTO.getLikedThingId()).orElseThrow();
+        Member member = memberRepository.findById(likeReqDTO.getMemberId())
+                .orElseThrow(()-> new RestApiException(CustomExceptionCode.MEMBER_NOT_FOUND));
+        Device device = deviceRepository.findById(likeReqDTO.getLikedThingId())
+                .orElseThrow(()-> new RestApiException(CustomExceptionCode.DEVICE_NOT_FOUND));
 
         // 좋아요 삭제 후 저장
         MemberLikeDevice memberLikeDevice = memberLikeDeviceRepository.findByMemberAndDevice(member, device);
@@ -63,9 +69,16 @@ public class DeviceLikeServiceImpl implements LikeService<DeviceLikeResDTO, Long
 
         List<MemberLikeDevice> memberLikeDeviceList = memberLikeDeviceRepository.findAllByMember_Id(memberId);
 
+        if (memberLikeDeviceList.isEmpty()) throw new RestApiException(CustomExceptionCode.NO_LIKE_LIST);
+
         List<DeviceLikeResDTO> deviceLikeListResDTO = new ArrayList<>();
         for(MemberLikeDevice memberLikeDevice : memberLikeDeviceList){
-            deviceLikeListResDTO.add(new DeviceLikeResDTO(memberLikeDevice.getDevice().getId(), memberLikeDevice.getDevice().getDeviceName()));
+            deviceLikeListResDTO.add(
+                    new DeviceLikeResDTO(
+                            memberLikeDevice.getDevice().getId(),
+                            memberLikeDevice.getDevice().getDeviceName()
+                    )
+            );
         }
 
         return deviceLikeListResDTO;
@@ -74,6 +87,8 @@ public class DeviceLikeServiceImpl implements LikeService<DeviceLikeResDTO, Long
     public List<DeviceResDTO> findByKeyword(String keyword){
 
         List<Device> deviceList = deviceRepository.searchDeviceByDeviceName(keyword.replace(" ", ""));
+
+        if (deviceList.isEmpty()) throw new RestApiException(CustomExceptionCode.NO_LIKE_LIST);
 
         List<DeviceResDTO> res = new ArrayList<>();
         for(Device device: deviceList){

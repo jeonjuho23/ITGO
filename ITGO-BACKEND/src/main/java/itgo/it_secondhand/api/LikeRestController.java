@@ -14,6 +14,7 @@ import itgo.it_secondhand.service.post.DTO.FindPostReqDTO;
 import itgo.it_secondhand.service.post.DTO.FindPostResDTO;
 import itgo.it_secondhand.service.post.DTO.PostResDTO;
 import itgo.it_secondhand.service.post.ScrapingPostService;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -39,7 +40,8 @@ public class LikeRestController {
 
     @PostMapping("/devices")
     public ResponseEntity<ResponseDTO<?>> registDevice
-            (@PathVariable(name = "memberId") Long memberId, @RequestBody Long deviceId){
+            (@PathVariable(name = "memberId") Long memberId,
+             @RequestBody @NotNull Long deviceId){
 
         LikeReqDTO<Long> reqDTO = LikeReqDTO.<Long>builder()
                 .memberId(memberId)
@@ -56,7 +58,8 @@ public class LikeRestController {
 
     @PostMapping("/posts")
     public ResponseEntity<ResponseDTO<?>> registPost
-            (@PathVariable(name = "memberId") Long memberId, @RequestBody Long postId){
+            (@PathVariable(name = "memberId") Long memberId,
+             @RequestBody @NotNull Long postId){
 
         LikeReqDTO<Long> reqDTO = LikeReqDTO.<Long>builder()
                 .memberId(memberId)
@@ -73,7 +76,8 @@ public class LikeRestController {
 
     @PostMapping("/locations")
     public ResponseEntity<ResponseDTO<?>> registLocation
-            (@PathVariable(name = "memberId") Long memberId, @RequestBody String locationId){
+            (@PathVariable(name = "memberId") Long memberId,
+             @RequestBody @NotNull  String locationId){
 
         LikeReqDTO<String> reqDTO = LikeReqDTO.<String>builder()
                 .memberId(memberId).likedThingId(locationId).build();
@@ -90,7 +94,8 @@ public class LikeRestController {
 
     @DeleteMapping("/devices")
     public ResponseEntity<ResponseDTO<?>> deleteDevice
-            (@PathVariable(name = "memberId") Long memberId, @RequestParam Long deviceId){
+            (@PathVariable(name = "memberId") Long memberId,
+             @RequestParam Long deviceId){
 
         LikeReqDTO<Long> reqDTO = LikeReqDTO.<Long>builder()
                 .memberId(memberId)
@@ -107,7 +112,8 @@ public class LikeRestController {
 
     @DeleteMapping("/posts")
     public ResponseEntity<ResponseDTO<?>> deletePost
-            (@PathVariable(name = "memberId") Long memberId, @RequestParam Long postId){
+            (@PathVariable(name = "memberId") Long memberId,
+             @RequestParam Long postId){
 
         LikeReqDTO<Long> reqDTO = LikeReqDTO.<Long>builder()
                 .memberId(memberId)
@@ -124,7 +130,8 @@ public class LikeRestController {
 
     @DeleteMapping("/locations")
     public ResponseEntity<ResponseDTO<?>> deleteLocation
-            (@PathVariable(name = "memberId") Long memberId, @RequestParam Long locationId){
+            (@PathVariable(name = "memberId") Long memberId,
+             @RequestParam Long locationId){
 
         LikeReqDTO<Long> reqDTO = LikeReqDTO.<Long>builder()
                 .memberId(memberId)
