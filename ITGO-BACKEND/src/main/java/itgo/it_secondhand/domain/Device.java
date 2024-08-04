@@ -2,12 +2,15 @@ package itgo.it_secondhand.domain;
 
 
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class Device {
 
     @Id @GeneratedValue
@@ -26,7 +29,6 @@ public class Device {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    protected Device(){}
 
     private Device(String deviceName, int launchPrice, Category category, LocalDateTime releaseDate, String detailId){
         this.deviceName = deviceName;
@@ -43,3 +45,5 @@ public class Device {
 
 
 }
+
+

@@ -9,17 +9,16 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDateTime;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-class MemberLikePostRepositoryTest {
+class MemberViewPostRepositoryTest {
 
     @Autowired
-    MemberLikePostRepository memberLikePostRepository;
+    MemberViewPostRepository memberViewPostRepository;
 
-    private static MemberLikePost newMemberLikePost;
+    private static MemberViewPost newMemberViewPost;
 
     @Autowired
     MemberRepository memberRepository;
@@ -58,23 +57,20 @@ class MemberLikePostRepositoryTest {
         deviceRepository.save(device);
         postRepository.save(post);
 
-
-        newMemberLikePost = MemberLikePost.createMemberLikePost(member, post);
-        memberLikePostRepository.save(newMemberLikePost);
+        newMemberViewPost = MemberViewPost.createMemberViewPost(member, post);
+        memberViewPostRepository.save(newMemberViewPost);
     }
+
 
 
     @Test
-    public void findByMemberAndPost() throws Exception {
+    public void findTopByMemberAndPostOrderByViewDateDesc() throws Exception {
         //given
 
         //when
-        MemberLikePost result = memberLikePostRepository.findByMemberAndPost(member, post);
+        MemberViewPost result = memberViewPostRepository.findTopByMemberAndPostOrderByViewDateDesc(member, post);
 
         //then
-        assertThat(result.getMember().getId()).isEqualTo(member.getId());
-        assertThat(result.getPost().getId()).isEqualTo(post.getId());
+        assertThat(result.getViewDate()).isEqualTo(newMemberViewPost.getViewDate());
     }
-
-
 }
