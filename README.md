@@ -10,7 +10,10 @@
   - [API 명세서](https://iamjeonjuho.notion.site/API-Doc-bc06ae45699542618be24db7850c249d?pvs=74) 작성
   - 적절한 HTTP 메서드와 URL 적용
   - 모든 응답 데이터를 json 객체 타입으로 반환하기 위해 공통 ResponseDTO<T>를 적용
-  - 전역 예외처리 적용 
+  - 전역 예외처리 적용
+- 2024.08
+  - 테스트 코드 작성
+    - 레포지토리 테스트 코드 작성 
 
 <br/>
 
