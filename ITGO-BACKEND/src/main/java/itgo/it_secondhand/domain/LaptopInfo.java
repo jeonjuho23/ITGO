@@ -8,4 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Builder
 @Data
 public class LaptopInfo {
+    private String id;
+    private String modelname;
 }
