@@ -69,7 +69,7 @@ class MemberLikePostRepositoryTest {
         //given
 
         //when
-        MemberLikePost result = memberLikePostRepository.findByMemberAndPost(member, post);
+        MemberLikePost result = memberLikePostRepository.findByMemberAndPost(member, post).get();
 
         //then
         assertThat(result.getMember().getId()).isEqualTo(member.getId());
