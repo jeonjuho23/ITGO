@@ -65,7 +65,7 @@ class MemberLikeDeviceRepositoryTest {
         //given
 
         //when
-        MemberLikeDevice result = memberLikeDeviceRepository.findByMemberAndDevice(member, device);
+        MemberLikeDevice result = memberLikeDeviceRepository.findByMemberAndDevice(member, device).get();
 
         //then
         assertThat(result.getMember().getId()).isEqualTo(member.getId());
