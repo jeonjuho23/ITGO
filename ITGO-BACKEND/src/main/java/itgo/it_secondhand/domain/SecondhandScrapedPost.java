@@ -34,6 +34,9 @@ public class SecondhandScrapedPost extends Post{
         this.location = location;
     }
 
+    public static SecondhandScrapedPost createPost(){
+        return new SecondhandScrapedPost();
+    }
     public static SecondhandScrapedPost createPost(Member member, String postTitle, String postContent,
                                                    String imgFolderAddress, Device device,
                                                    int secondhandPrice, String postUrl,
