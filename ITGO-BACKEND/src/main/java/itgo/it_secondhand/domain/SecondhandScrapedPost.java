@@ -4,6 +4,7 @@ package itgo.it_secondhand.domain;
 import itgo.it_secondhand.domain.value.Location;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @DiscriminatorValue("secondhand_scraped")
+@SuperBuilder
 public class SecondhandScrapedPost extends Post{
 
     @ManyToOne(fetch = FetchType.LAZY)
