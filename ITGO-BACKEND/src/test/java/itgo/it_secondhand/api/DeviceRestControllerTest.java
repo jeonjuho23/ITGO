@@ -21,6 +21,7 @@ import org.springframework.util.MultiValueMap;
 import java.util.ArrayList;
 import java.util.List;
 
+import static itgo.it_secondhand.api.ControllerTestUtil.checkResponseDataThrowException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -273,12 +274,4 @@ class DeviceRestControllerTest {
     }
 
 
-    private static void checkResponseDataThrowException(ResultActions action, CustomExceptionCode exceptionCode) throws Exception {
-        action.andExpect(status().isNotFound())
-                .andExpect(jsonPath("message")
-                        .value(exceptionCode.getMessage()))
-                .andExpect(jsonPath("code")
-                        .value(exceptionCode.name()))
-                .andDo(print());
-    }
 }
