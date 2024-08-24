@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class ControllerTestUtil {
     static void checkResponseDataThrowException(ResultActions action, CustomExceptionCode exceptionCode) throws Exception {
-        action.andExpect(status().isNotFound())
+        action.andExpect(status().is(exceptionCode.getHttpStatus().value()))
                 .andExpect(jsonPath("message")
                         .value(exceptionCode.getMessage()))
                 .andExpect(jsonPath("code")
