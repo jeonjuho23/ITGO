@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "d_type")
+@SuperBuilder
 public abstract class Post {
 
     @Id @GeneratedValue
@@ -62,18 +64,18 @@ public abstract class Post {
 //    }
 
 
-
     //== 비즈니스 로직 ==//
-    public void reduceLikeCount(){
+    public void reduceLikeCount() {
         this.postLikeCount -= 1;
     }
+
     public void increaseLikeCount() {
         this.postLikeCount += 1;
     }
-    public void increaseViewCount(){
+
+    public void increaseViewCount() {
         this.postViewCount += 1;
     }
-
 
 
 }

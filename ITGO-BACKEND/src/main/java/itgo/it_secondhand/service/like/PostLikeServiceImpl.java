@@ -53,7 +53,8 @@ public class PostLikeServiceImpl implements LikeService<PostResDTO, Long> {
         Post post = postRepository.findById(likeReqDTO.getLikedThingId())
                 .orElseThrow(() -> new RestApiException(CustomExceptionCode.POST_NOT_FOUND));
 
-        MemberLikePost memberLikePost = memberLikePostRepository.findByMemberAndPost(member, post);
+        MemberLikePost memberLikePost = memberLikePostRepository.findByMemberAndPost(member, post)
+                .orElseThrow(() -> new RestApiException(CustomExceptionCode.LIKE_NOT_FOUND));
 
         // 좋아요 삭제
         memberLikePostRepository.delete(memberLikePost);

@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -128,8 +129,8 @@ public class ScrapingPostServiceImpl implements ScrapingPostService {
         for(SecondhandScrapedPost post : posts){
             // is like?
             Boolean isLike = Boolean.TRUE;
-            MemberLikePost likeMemberAndPost = memberLikePostRepository.findByMemberAndPost(member, post);
-            if(likeMemberAndPost == null) isLike = Boolean.FALSE;
+            Optional<MemberLikePost> likeMemberAndPost = memberLikePostRepository.findByMemberAndPost(member, post);
+            if(likeMemberAndPost.isEmpty()) isLike = Boolean.FALSE;
             // is view?
             Boolean isView = Boolean.TRUE;
             MemberViewPost viewMemberAndPost = memberViewPostRepository.findTopByMemberAndPostOrderByViewDateDesc(member, post);

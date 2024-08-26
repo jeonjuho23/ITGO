@@ -6,8 +6,9 @@ import itgo.it_secondhand.domain.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface MemberLikePostRepository extends JpaRepository<MemberLikePost, Long> {
-    MemberLikePost findByMemberAndPost(Member member, Post post);
+    Optional<MemberLikePost> findByMemberAndPost(Member member, Post post);
 }

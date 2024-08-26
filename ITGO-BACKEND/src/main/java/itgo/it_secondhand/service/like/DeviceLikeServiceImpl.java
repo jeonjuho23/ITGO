@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -58,7 +59,8 @@ public class DeviceLikeServiceImpl implements LikeService<DeviceLikeResDTO, Long
                 .orElseThrow(()-> new RestApiException(CustomExceptionCode.DEVICE_NOT_FOUND));
 
         // 좋아요 삭제 후 저장
-        MemberLikeDevice memberLikeDevice = memberLikeDeviceRepository.findByMemberAndDevice(member, device);
+        MemberLikeDevice memberLikeDevice = memberLikeDeviceRepository.findByMemberAndDevice(member, device)
+                .orElseThrow(()->new RestApiException(CustomExceptionCode.LIKE_NOT_FOUND));
 
         memberLikeDeviceRepository.delete(memberLikeDevice);
 
