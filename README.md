@@ -12,8 +12,10 @@
   - 모든 응답 데이터를 json 객체 타입으로 반환하기 위해 공통 ResponseDTO<T>를 적용
   - 전역 예외처리 적용
 - 2024.08
-  - 테스트 코드 작성
-    - 레포지토리 테스트 코드 작성 
+  - 단위 테스트 코드 작성
+    - Repository
+    - Service
+    - Controller
 
 <br/>
 
