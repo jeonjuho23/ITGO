@@ -47,12 +47,8 @@ public class LikeRestController {
                 .likedThingId(deviceId)
                 .build();
 
-        Long registId =
+        Long resDTO =
                 deviceLikeService.regist(reqDTO);
-
-        RegistLikeResponseDTO resDTO = RegistLikeResponseDTO.builder()
-                .registId(registId)
-                .build();
 
         return ResponseEntity.ok().body(success(resDTO));
     }
@@ -67,12 +63,8 @@ public class LikeRestController {
                 .likedThingId(postId)
                 .build();
 
-        Long registId =
+        Long resDTO =
                 postLikeService.regist(reqDTO);
-
-        RegistLikeResponseDTO resDTO = RegistLikeResponseDTO.builder()
-                .registId(registId)
-                .build();
 
         return ResponseEntity.ok().body(success(resDTO));
     }
@@ -87,12 +79,8 @@ public class LikeRestController {
                 .likedThingId(locationId)
                 .build();
 
-        Long registId =
+        Long resDTO =
                 locationLikeService.regist(reqDTO);
-
-        RegistLikeResponseDTO resDTO = RegistLikeResponseDTO.builder()
-                .registId(registId)
-                .build();
 
         return ResponseEntity.ok().body(success(resDTO));
     }
