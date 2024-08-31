@@ -19,12 +19,6 @@ public class PostRestController {
 
     private final ScrapingPostService scrapingPostService;
 
-
-    // 현재 ResponseEntity의 제네릭으로 Service에서 받은 응답객체가 들어간다.
-    // 이렇게 하면 HTTP Response에 다른 데이터가 필요하다면 Service에서 받은 응답객체에 종속적이므로 문제가 생긴다.
-    // 전용 응답 DTO로 변환하여 HTTP Response 할 수 있도록 하자.
-
-
     @GetMapping
     public ResponseEntity<ResponseDTO<?>> findPostList
             (@RequestParam Long memberId,
@@ -37,9 +31,10 @@ public class PostRestController {
                 .memberId(memberId)
                 .build();
 
-        FindPostResDTO responseDTO = scrapingPostService.findALlScrapingPostList(reqDTO);
+        FindPostResDTO resDTO =
+                scrapingPostService.findALlScrapingPostList(reqDTO);
 
-        return ResponseEntity.ok().body(success(responseDTO));
+        return ResponseEntity.ok().body(success(resDTO));
     }
 
 
@@ -54,29 +49,30 @@ public class PostRestController {
                 .postId(postId)
                 .build();
 
-        ScrapedPostViewResDTO responseDTO = scrapingPostService.viewScrapingPost(reqDTO);
+        ScrapedPostViewResDTO resDTO =
+                scrapingPostService.viewScrapingPost(reqDTO);
 
-        return ResponseEntity.ok().body(success(responseDTO));
+        return ResponseEntity.ok().body(success(resDTO));
     }
 
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<ResponseDTO<?>> findPostByCategory
-            (@PathVariable(name = "categoryId") Long categoryId, @RequestParam Long memberId,
+            (@PathVariable(name = "categoryId") Long categoryId,
+             @RequestParam Long memberId,
              @PageableDefault(page = 0, size = 10) Pageable pageable) {
 
         FindPostByCategoryReqDTO reqDTO = FindPostByCategoryReqDTO.builder()
                 .categoryId(categoryId)
                 .memberId(memberId)
-                .size(pageable.getPageSize()).page(pageable.getPageNumber()).sortBy(SortBy.RECENT_POST)
+                .size(pageable.getPageSize())
+                .page(pageable.getPageNumber())
+                .sortBy(SortBy.RECENT_POST)
                 .build();
 
-        FindPostResDTO scrapingPostListByCategory = scrapingPostService.findScrapingPostListByCategory(reqDTO);
+        FindPostResDTO resDTO =
+                scrapingPostService.findScrapingPostListByCategory(reqDTO);
 
-        FindPostResDTO findPostResDTO = FindPostResDTO.builder()
-                .posts(scrapingPostListByCategory.getPosts())
-                .hasNext(scrapingPostListByCategory.getHasNext())
-                .build();
-        return ResponseEntity.ok().body(success(findPostResDTO));
+        return ResponseEntity.ok().body(success(resDTO));
     }
 
     @GetMapping("/location/{city}")
@@ -88,16 +84,15 @@ public class PostRestController {
         FindPostByLocationReqDTO reqDTO = FindPostByLocationReqDTO.builder()
                 .city(city)
                 .memberId(memberId)
-                .size(pageable.getPageSize()).page(pageable.getPageNumber()).sortBy(SortBy.RECENT_POST)
+                .size(pageable.getPageSize())
+                .page(pageable.getPageNumber())
+                .sortBy(SortBy.RECENT_POST)
                 .build();
 
-        FindPostResDTO scrapingPostListByCategory = scrapingPostService.findScrapingPostListByLocation(reqDTO);
+        FindPostResDTO resDTO =
+                scrapingPostService.findScrapingPostListByLocation(reqDTO);
 
-        FindPostResDTO findPostResDTO = FindPostResDTO.builder()
-                .posts(scrapingPostListByCategory.getPosts())
-                .hasNext(scrapingPostListByCategory.getHasNext())
-                .build();
-        return ResponseEntity.ok().body(success(findPostResDTO));
+        return ResponseEntity.ok().body(success(resDTO));
     }
 
 
