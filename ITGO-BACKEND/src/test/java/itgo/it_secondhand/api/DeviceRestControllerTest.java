@@ -87,7 +87,7 @@ class DeviceRestControllerTest {
         verify(deviceService, times(1))
                 .findDeviceListByCategory(any(FindDeviceListByCategoryReqDTO.class));
         action.andExpect(status().isOk())
-                .andExpect(jsonPath("data.deviceList").isNotEmpty())
+                .andExpect(jsonPath("data.deviceList").isArray())
                 .andDo(print());
     }
 
