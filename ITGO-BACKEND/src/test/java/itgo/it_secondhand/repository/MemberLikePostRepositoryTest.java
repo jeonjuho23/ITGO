@@ -1,25 +1,20 @@
 package itgo.it_secondhand.repository;
 
+import itgo.it_secondhand.StubFactory;
 import itgo.it_secondhand.domain.*;
-import itgo.it_secondhand.domain.value.Location;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.time.LocalDateTime;
-
-import static org.assertj.core.api.Assertions.*;
+import static itgo.it_secondhand.StubFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 class MemberLikePostRepositoryTest {
 
     @Autowired
     MemberLikePostRepository memberLikePostRepository;
-
-    private static MemberLikePost newMemberLikePost;
 
     @Autowired
     MemberRepository memberRepository;
@@ -29,38 +24,27 @@ class MemberLikePostRepositoryTest {
     DeviceRepository deviceRepository;
     @Autowired
     SecondhandPostRepository postRepository;
-    private static Member member;
-    private static Device device;
-    private static SecondhandScrapedPost post;
+
+    private MemberLikePost memberLikePost;
+    private Member member;
+    private Device device;
+    private SecondhandScrapedPost post;
 
     @BeforeEach
     void setUp(){
-        Location location = new Location("city", "street", "zipcode");
-        member = Member.builder()
-                .location(location)
-                .name("name")
-                .phone("phone")
-                .imgAddress("imgAddress")
-                .build();
-        Category category = Category.createCategory("manufacturer", "deviceType");
-        device = Device.builder()
-                .category(category)
-                .detailId("detailId")
-                .deviceName("deviceName")
-                .launchPrice(1000)
-                .releaseDate(LocalDateTime.now())
-                .build();
+        memberLikePost = getMemberLikeSecondhandScrapedPost();
 
-        post = SecondhandScrapedPost.createPost(member, "postTitle", "postContent", "imgFolderAddress", device, 1000, "postUrl", location);
+        member = memberLikePost.getMember();
+        post = (SecondhandScrapedPost) memberLikePost.getPost();
+        device = post.getDevice();
+        Category category = device.getCategory();
 
         memberRepository.save(member);
         categoryRepository.save(category);
         deviceRepository.save(device);
         postRepository.save(post);
 
-
-        newMemberLikePost = MemberLikePost.createMemberLikePost(member, post);
-        memberLikePostRepository.save(newMemberLikePost);
+        memberLikePostRepository.save(memberLikePost);
     }
 
 
@@ -72,8 +56,10 @@ class MemberLikePostRepositoryTest {
         MemberLikePost result = memberLikePostRepository.findByMemberAndPost(member, post).get();
 
         //then
-        assertThat(result.getMember().getId()).isEqualTo(member.getId());
-        assertThat(result.getPost().getId()).isEqualTo(post.getId());
+        assertThat(result.getMember().getId())
+                .isEqualTo(member.getId());
+        assertThat(result.getPost().getId())
+                .isEqualTo(post.getId());
     }
 
 

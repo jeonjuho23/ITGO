@@ -6,21 +6,24 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import static itgo.it_secondhand.StubFactory.getKeyword;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 class KeywordRepositoryTest {
+
     @Autowired
     KeywordRepository keywordRepository;
 
-    private static Keyword keyword;
+    private Keyword keyword;
 
     @BeforeEach
     void setUp(){
-        keyword = Keyword.create("keyword");
+        keyword = getKeyword();
+
         keywordRepository.save(keyword);
     }
+
 
     @Test
     public void findByKeyword() throws Exception {
@@ -31,8 +34,8 @@ class KeywordRepositoryTest {
         Keyword response = keywordRepository.findByKeyword(requestKeyword);
 
         //then
-        assertThat(response.getKeyword()).isEqualTo(requestKeyword);
+        assertThat(response.getKeyword())
+                .isEqualTo(requestKeyword);
     }
-
 
 }

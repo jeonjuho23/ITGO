@@ -26,7 +26,8 @@ class CategoryRepositoryTest {
         List<Category> allCategories = categoryRepository.findAll();
 
         //then
-        assertThat(allCategories.size()).isEqualTo(saveList.size());
+        assertThat(allCategories.size())
+                .isEqualTo(saveList.size());
     }
 
     private List<Category> setUpCategories() {
