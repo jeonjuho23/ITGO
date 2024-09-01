@@ -16,6 +16,12 @@
     - Repository
     - Service
     - Controller
+- 2024.09
+  - 단위 테스트 리팩터링
+    - Controller
+      - 상태 검증 -> 행위 검증
+    - Service, Repository
+      - Stub 객체를 생성하는 팩토리 클래스 사용
 
 <br/>
 
