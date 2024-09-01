@@ -62,10 +62,11 @@ public class StubFactory {
     }
 
     public static MemberLikePost getMemberLikeSecondhandScrapedPost() {
+        SecondhandScrapedPost secondhandScrapedPost = getSecondhandScrapedPost();
         return MemberLikePost.builder()
                 .id(1L)
-                .post(getSecondhandScrapedPost())
-                .member(getMember())
+                .post(secondhandScrapedPost)
+                .member(secondhandScrapedPost.getMember())
                 .likeDate(getLocalDateTimeNow())
                 .build();
     }
@@ -116,13 +117,13 @@ public class StubFactory {
         return new SliceImpl<>(getMemberSearchKeywordList(), getPageable(), hasNext);
     }
 
-    public static MemberSearchKeyword getMemberSearchKeyword() {
-        return MemberSearchKeyword.createMemberSearchKeyword(getMember(), getKeyword());
-    }
-
     public static MemberViewPost getMemberViewPost(SecondhandScrapedPost secondhandScrapedPost) {
         return MemberViewPost
-                .createMemberViewPost(getMember(), secondhandScrapedPost);
+                .createMemberViewPost(secondhandScrapedPost.getMember(), secondhandScrapedPost);
+    }
+
+    public static MemberSearchKeyword getMemberSearchKeyword() {
+        return MemberSearchKeyword.createMemberSearchKeyword(getMember(), getKeyword());
     }
 
     public static List<SecondhandScrapedPost> getSecondhandScrapedPostList() {
