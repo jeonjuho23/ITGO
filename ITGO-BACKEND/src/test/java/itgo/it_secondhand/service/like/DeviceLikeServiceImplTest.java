@@ -15,17 +15,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static itgo.it_secondhand.StubFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DeviceLikeServiceImplTest {
@@ -44,16 +43,14 @@ class DeviceLikeServiceImplTest {
     @Test
     public void regist() throws Exception {
         //given
-        when(memberRepository.findById(Mockito.anyLong()))
-                .thenReturn(Optional.of(Mockito.mock(Member.class)));
-        when(deviceRepository.findById(Mockito.anyLong()))
-                .thenReturn(Optional.of(Mockito.mock(Device.class)));
+        when(memberRepository.findById(anyLong()))
+                .thenReturn(Optional.of(mock(Member.class)));
+        when(deviceRepository.findById(anyLong()))
+                .thenReturn(Optional.of(mock(Device.class)));
 
-        MemberLikeDevice memberLikeDevice = MemberLikeDevice.builder()
-                .id(1L).build();
-        when(memberLikeDeviceRepository.save(Mockito.any(MemberLikeDevice.class)))
+        MemberLikeDevice memberLikeDevice = getMemberLikeDevice();
+        when(memberLikeDeviceRepository.save(any(MemberLikeDevice.class)))
                 .thenReturn(memberLikeDevice);
-
 
         LikeReqDTO<Long> request = new LikeReqDTO<>(1L, 1L);
 
@@ -61,14 +58,15 @@ class DeviceLikeServiceImplTest {
         Long response = deviceLikeService.regist(request);
 
         //then
-        assertThat(response).isEqualTo(memberLikeDevice.getId());
+        assertThat(response)
+                .isEqualTo(memberLikeDevice.getId());
     }
 
 
     @Test
     public void registThrowMemberNotFoundException() throws Exception {
         //given
-        when(memberRepository.findById(Mockito.anyLong()))
+        when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
 
         LikeReqDTO<Long> request = new LikeReqDTO<>(1L, 1L);
@@ -81,18 +79,16 @@ class DeviceLikeServiceImplTest {
         //then
         assertThat(exception.getExceptionCode())
                 .isEqualTo(CustomExceptionCode.MEMBER_NOT_FOUND);
-
     }
 
 
     @Test
     public void registThrowDeviceNotFoundException() throws Exception {
         //given
-        when(memberRepository.findById(Mockito.anyLong()))
-                .thenReturn(Optional.of(Mockito.mock(Member.class)));
-        when(deviceRepository.findById(Mockito.anyLong()))
+        when(memberRepository.findById(anyLong()))
+                .thenReturn(Optional.of(mock(Member.class)));
+        when(deviceRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
-
 
         LikeReqDTO<Long> request = new LikeReqDTO<>(1L, 1L);
 
@@ -110,14 +106,12 @@ class DeviceLikeServiceImplTest {
     @Test
     public void delete() throws Exception {
         //given
-        when(memberRepository.findById(Mockito.anyLong()))
-                .thenReturn(Optional.of(Mockito.mock(Member.class)));
-        when(deviceRepository.findById(Mockito.anyLong()))
-                .thenReturn(Optional.of(Mockito.mock(Device.class)));
-
-        when(memberLikeDeviceRepository.findByMemberAndDevice(Mockito.any(Member.class), Mockito.any(Device.class)))
-                .thenReturn(Optional.of(Mockito.mock(MemberLikeDevice.class)));
-
+        when(memberRepository.findById(anyLong()))
+                .thenReturn(Optional.of(mock(Member.class)));
+        when(deviceRepository.findById(anyLong()))
+                .thenReturn(Optional.of(mock(Device.class)));
+        when(memberLikeDeviceRepository.findByMemberAndDevice(any(Member.class), any(Device.class)))
+                .thenReturn(Optional.of(mock(MemberLikeDevice.class)));
 
         LikeReqDTO<Long> request = new LikeReqDTO<>(1L, 1L);
 
@@ -132,9 +126,8 @@ class DeviceLikeServiceImplTest {
     @Test
     public void deleteThrowMemberNotFoundException() throws Exception {
         //given
-        when(memberRepository.findById(Mockito.anyLong()))
+        when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
-
 
         LikeReqDTO<Long> request = new LikeReqDTO<>(1L, 1L);
 
@@ -146,18 +139,16 @@ class DeviceLikeServiceImplTest {
         //then
         assertThat(exception.getExceptionCode())
                 .isEqualTo(CustomExceptionCode.MEMBER_NOT_FOUND);
-
     }
 
 
     @Test
     public void deleteThrowDeviceNotFoundException() throws Exception {
         //given
-        when(memberRepository.findById(Mockito.anyLong()))
-                .thenReturn(Optional.of(Mockito.mock(Member.class)));
-        when(deviceRepository.findById(Mockito.anyLong()))
+        when(memberRepository.findById(anyLong()))
+                .thenReturn(Optional.of(mock(Member.class)));
+        when(deviceRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
-
 
         LikeReqDTO<Long> request = new LikeReqDTO<>(1L, 1L);
 
@@ -175,14 +166,12 @@ class DeviceLikeServiceImplTest {
     @Test
     public void deleteThrowLikeNotFoundException() throws Exception {
         //given
-        when(memberRepository.findById(Mockito.anyLong()))
-                .thenReturn(Optional.of(Mockito.mock(Member.class)));
-        when(deviceRepository.findById(Mockito.anyLong()))
-                .thenReturn(Optional.of(Mockito.mock(Device.class)));
-
-        when(memberLikeDeviceRepository.findByMemberAndDevice(Mockito.any(Member.class), Mockito.any(Device.class)))
+        when(memberRepository.findById(anyLong()))
+                .thenReturn(Optional.of(mock(Member.class)));
+        when(deviceRepository.findById(anyLong()))
+                .thenReturn(Optional.of(mock(Device.class)));
+        when(memberLikeDeviceRepository.findByMemberAndDevice(any(Member.class), any(Device.class)))
                 .thenReturn(Optional.empty());
-
 
         LikeReqDTO<Long> request = new LikeReqDTO<>(1L, 1L);
 
@@ -199,13 +188,9 @@ class DeviceLikeServiceImplTest {
     @Test
     public void checkList() throws Exception {
         //given
-        Device device = Device.builder().id(1L).deviceName("deviceName").build();
-        MemberLikeDevice memberLikeDevice = MemberLikeDevice.builder().device(device).build();
-
-        List<MemberLikeDevice> list = new ArrayList<>(List.of(memberLikeDevice));
-        when(memberLikeDeviceRepository.findAllByMember_Id(Mockito.anyLong()))
+        List<MemberLikeDevice> list = getMemberLikeDeviceList();
+        when(memberLikeDeviceRepository.findAllByMember_Id(anyLong()))
                 .thenReturn(list);
-
 
         Long request = 1L;
 
@@ -213,9 +198,10 @@ class DeviceLikeServiceImplTest {
         List<DeviceLikeResDTO> response = deviceLikeService.checkList(request);
 
         //then
-        assertThat(response.get(0).getDeviceId()).isEqualTo(list.get(0).getDevice().getId());
-        assertThat(response.get(0).getDeviceName()).isEqualTo(list.get(0).getDevice().getDeviceName());
-
+        assertThat(response.get(0).getDeviceId())
+                .isEqualTo(list.get(0).getDevice().getId());
+        assertThat(response.get(0).getDeviceName())
+                .isEqualTo(list.get(0).getDevice().getDeviceName());
     }
 
 
@@ -223,9 +209,8 @@ class DeviceLikeServiceImplTest {
     public void checkListThrowNoLikeListException() throws Exception {
         //given
         List<MemberLikeDevice> list = new ArrayList<>();
-        when(memberLikeDeviceRepository.findAllByMember_Id(Mockito.anyLong()))
+        when(memberLikeDeviceRepository.findAllByMember_Id(anyLong()))
                 .thenReturn(list);
-
 
         Long request = 1L;
 
@@ -237,19 +222,15 @@ class DeviceLikeServiceImplTest {
         //then
         assertThat(exception.getExceptionCode())
                 .isEqualTo(CustomExceptionCode.NO_LIKE_LIST);
-
     }
 
 
     @Test
     public void findByKeyword() throws Exception {
         //given
-
-        Device device = Device.builder().id(1L).deviceName("deviceName").build();
-        List<Device> list = new ArrayList<>(List.of(device));
-        when(deviceRepository.searchDeviceByDeviceName(Mockito.anyString()))
+        List<Device> list = getDeviceList();
+        when(deviceRepository.searchDeviceByDeviceName(anyString()))
                 .thenReturn(list);
-
 
         String request = "keyword";
 
@@ -257,9 +238,10 @@ class DeviceLikeServiceImplTest {
         List<DeviceResDTO> response = deviceLikeService.findByKeyword(request);
 
         //then
-        assertThat(response.get(0).getId()).isEqualTo(list.get(0).getId());
-        assertThat(response.get(0).getDeviceName()).isEqualTo(list.get(0).getDeviceName());
-
+        assertThat(response.get(0).getId())
+                .isEqualTo(list.get(0).getId());
+        assertThat(response.get(0).getDeviceName())
+                .isEqualTo(list.get(0).getDeviceName());
     }
 
 
@@ -267,9 +249,8 @@ class DeviceLikeServiceImplTest {
     public void findByKeywordThrowNoLikeListException() throws Exception {
         //given
         List<Device> list = new ArrayList<>();
-        when(deviceRepository.searchDeviceByDeviceName(Mockito.anyString()))
+        when(deviceRepository.searchDeviceByDeviceName(anyString()))
                 .thenReturn(list);
-
 
         String request = "keyword";
 
@@ -281,7 +262,6 @@ class DeviceLikeServiceImplTest {
         //then
         assertThat(exception.getExceptionCode())
                 .isEqualTo(CustomExceptionCode.NO_LIKE_LIST);
-
     }
 
 }

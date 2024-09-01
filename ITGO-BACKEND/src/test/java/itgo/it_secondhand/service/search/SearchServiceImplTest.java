@@ -18,21 +18,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static itgo.it_secondhand.StubFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SearchServiceImplTest {
-
 
     @InjectMocks
     SearchServiceImpl searchService;
@@ -54,63 +54,55 @@ class SearchServiceImplTest {
     @Test
     public void keywordSearch() throws Exception {
         //given
-        String keyword = "keyword";
-
-        SecondhandScrapedPost post = SecondhandScrapedPost.builder()
-                .build();
-        Slice<SecondhandScrapedPost> posts = new SliceImpl<>(List.of(post));
+        Slice<SecondhandScrapedPost> posts = getSecondhandScrapedPostSlice();
         when(secondhandPostRepository.searchSecondhandPostByDeviceName(anyString(), any(Pageable.class)))
                 .thenReturn(posts);
 
-        Keyword dbKeyword = Keyword.builder()
-                .id(1L).keyword(keyword).build();
-        int count = dbKeyword.getCount();
+        Keyword keyword = getKeyword();
         when(keywordRepository.findByKeyword(anyString()))
-                .thenReturn(dbKeyword);
-
+                .thenReturn(keyword);
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.of(mock(Member.class)));
 
-        MemberSearchKeyword memberSearchKeyword = MemberSearchKeyword.createMemberSearchKeyword(mock(Member.class), dbKeyword);
-        LocalDateTime createDate = memberSearchKeyword.getSearchDate();
+        MemberSearchKeyword memberSearchKeyword = getMemberSearchKeyword();
         when(memberSearchKeywordRepository.findByMember_IdAndKeyword_Id(anyLong(), anyLong()))
                 .thenReturn(memberSearchKeyword);
-
-
         when(scrapingPostService.setFindPostDTO(any(Member.class), any(Slice.class)))
                 .thenReturn(mock(FindPostResDTO.class));
 
+        int count = keyword.getCount();
+        LocalDateTime createDate = memberSearchKeyword.getSearchDate();
 
-        SearchReqDTO request = new SearchReqDTO(1L, keyword, 0, 10, SortBy.RECENT_SEARCH);
+        SearchReqDTO request = new SearchReqDTO(1L, keyword.getKeyword(), 0, 10, SortBy.RECENT_SEARCH);
 
         //when
         FindPostResDTO response = searchService.keywordSearch(request);
 
         //then
         // increaseSearchCount() 로직 수행 확인
-        assertThat(memberSearchKeyword.getKeyword().getCount()).isGreaterThan(count);
-        assertThat(memberSearchKeyword.getSearchDate()).isNotEqualTo(createDate);
+        assertThat(memberSearchKeyword.getKeyword().getCount())
+                .isGreaterThan(count);
+        assertThat(memberSearchKeyword.getSearchDate())
+                .isNotEqualTo(createDate);
 
-        assertThat(response).isNotNull();
+        assertThat(response)
+                .isNotNull();
 
         verify(scrapingPostService, times(1))
                 .setFindPostDTO(any(Member.class), any(Slice.class));
-        verify(keywordRepository, never()).save(any());
-        verify(memberSearchKeywordRepository, never()).save(any());
+        verify(keywordRepository, never())
+                .save(any(Keyword.class));
+        verify(memberSearchKeywordRepository, never())
+                .save(any(MemberSearchKeyword.class));
     }
 
 
     @Test
     public void recentSearches() throws Exception {
         //given
-        String keyword = "keyword";
-        MemberSearchKeyword memberSearchKeyword =
-                MemberSearchKeyword
-                        .createMemberSearchKeyword(mock(Member.class), Keyword.create(keyword));
-        Slice<MemberSearchKeyword> memberSearchKeywords = new SliceImpl<>(List.of(memberSearchKeyword));
+        Slice<MemberSearchKeyword> memberSearchKeywords = getMemberSearchKeywordSlice();
         when(memberSearchKeywordRepository.findSliceByMember_Id(anyLong(), any(Pageable.class)))
                 .thenReturn(memberSearchKeywords);
-
 
         RecentSearchReqDTO request = new RecentSearchReqDTO(1L, 0, 10, SortBy.RECENT_SEARCH);
 
@@ -118,20 +110,16 @@ class SearchServiceImplTest {
         RecentSearchResDTO response = searchService.recentSearches(request);
 
         //then
-        assertThat(response.getKeywordList().get(0)).isEqualTo(keyword);
+        assertThat(response.getKeywordList().get(0))
+                .isEqualTo(memberSearchKeywords.getContent().get(0).getKeyword().getKeyword());
     }
 
     @Test
     public void recentSearchesWithHasNextTrue() throws Exception {
         //given
-        String keyword = "keyword";
-        MemberSearchKeyword memberSearchKeyword =
-                MemberSearchKeyword
-                        .createMemberSearchKeyword(mock(Member.class), Keyword.create(keyword));
-        Slice<MemberSearchKeyword> memberSearchKeywords = new SliceImpl<>(List.of(memberSearchKeyword), mock(Pageable.class), true);
+        Slice<MemberSearchKeyword> memberSearchKeywords = getMemberSearchKeywordSlice(true);
         when(memberSearchKeywordRepository.findSliceByMember_Id(anyLong(), any(Pageable.class)))
                 .thenReturn(memberSearchKeywords);
-
 
         RecentSearchReqDTO request = new RecentSearchReqDTO(1L, 0, 1, SortBy.RECENT_SEARCH);
 
@@ -139,9 +127,10 @@ class SearchServiceImplTest {
         RecentSearchResDTO response = searchService.recentSearches(request);
 
         //then
-        assertThat(response.getKeywordList().get(0)).isEqualTo(keyword);
-        assertThat(response.getHasNext()).isTrue();
-
+        assertThat(response.getKeywordList().get(0))
+                .isEqualTo(memberSearchKeywords.getContent().get(0).getKeyword().getKeyword());
+        assertThat(response.getHasNext())
+                .isTrue();
     }
 
     @Test
@@ -151,7 +140,6 @@ class SearchServiceImplTest {
         when(memberSearchKeywordRepository.findSliceByMember_Id(anyLong(), any(Pageable.class)))
                 .thenReturn(memberSearchKeywords);
 
-
         RecentSearchReqDTO request = new RecentSearchReqDTO(1L, 0, 10, SortBy.RECENT_SEARCH);
 
         //when
@@ -160,8 +148,8 @@ class SearchServiceImplTest {
         });
 
         //then
-        assertThat(exception.getExceptionCode()).isEqualTo(CustomExceptionCode.PAGE_NOT_FOUND);
+        assertThat(exception.getExceptionCode())
+                .isEqualTo(CustomExceptionCode.PAGE_NOT_FOUND);
     }
-
 
 }
