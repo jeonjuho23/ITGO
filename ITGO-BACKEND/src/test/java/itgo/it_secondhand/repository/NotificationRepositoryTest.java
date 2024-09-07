@@ -1,5 +1,6 @@
 package itgo.it_secondhand.repository;
 
+import itgo.it_secondhand.StubFactory;
 import itgo.it_secondhand.domain.Notification;
 import itgo.it_secondhand.domain.NotificationMessage;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static itgo.it_secondhand.StubFactory.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,18 +23,13 @@ class NotificationRepositoryTest {
     @Autowired
     NotificationRepository notificationRepository;
 
-    private static final Long memberId = 1L;
+    private Notification notification;
+
     @BeforeEach
     void setUp(){
-        List<NotificationMessage> messages = new ArrayList<>();
-        messages.add(new NotificationMessage("message", LocalDateTime.now()));
+        notification = getNotification();
 
-        Notification newNotification = Notification.builder()
-                .messages(messages)
-                .memberId(memberId)
-                .build();
-
-        notificationRepository.save(newNotification);
+        notificationRepository.save(notification);
     }
 
 
@@ -41,10 +38,11 @@ class NotificationRepositoryTest {
         //given
 
         //when
-        Notification result = notificationRepository.findByMemberId(memberId);
+        Notification result = notificationRepository.findByMemberId(notification.getMemberId());
 
         //then
-        assertThat(result.getMemberId()).isEqualTo(memberId);
+        assertThat(result.getMemberId())
+                .isEqualTo(notification.getMemberId());
     }
 
 
@@ -53,7 +51,7 @@ class NotificationRepositoryTest {
         //given
 
         //when
-        notificationRepository.deleteByMemberId(memberId);
+        notificationRepository.deleteByMemberId(notification.getMemberId());
 
         //then
     }

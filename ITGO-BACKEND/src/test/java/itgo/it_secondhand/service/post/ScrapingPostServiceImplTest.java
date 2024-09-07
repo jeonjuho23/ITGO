@@ -1,7 +1,6 @@
 package itgo.it_secondhand.service.post;
 
 import itgo.it_secondhand.domain.*;
-import itgo.it_secondhand.domain.value.Location;
 import itgo.it_secondhand.enum_.SortBy;
 import itgo.it_secondhand.exception.CustomExceptionCode;
 import itgo.it_secondhand.exception.RestApiException;
@@ -20,12 +19,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static itgo.it_secondhand.StubFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -50,30 +47,21 @@ class ScrapingPostServiceImplTest {
     @Test
     public void viewScrapingPost() throws Exception {
         //given
-        Member member = Member.builder()
-                .id(1L).name("name")
-                .build();
+        Member member = getMember();
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.of(member));
-        Device device = Device.builder()
-                .id(1L).deviceName("deviceName")
-                .category(Category.createCategory("manufacturer", "deviceType"))
-                .detailId("detailId")
-                .build();
-        SecondhandScrapedPost secondhandScrapedPost = SecondhandScrapedPost.builder()
-                .id(1L).device(device)
-                .postTitle("title").postContent("content").postTime(LocalDateTime.now())
-                .postLikeCount(0).postViewCount(0).postUrl("url")
-                .build();
-        int viewCount = secondhandScrapedPost.getPostViewCount();
+
+        SecondhandScrapedPost secondhandScrapedPost = getSecondhandScrapedPost();
         when(secondhandPostRepository.findById(anyLong()))
                 .thenReturn(Optional.of(secondhandScrapedPost));
-        MemberViewPost memberViewPost = MemberViewPost.createMemberViewPost(member, secondhandScrapedPost);
+
+        MemberViewPost memberViewPost = getMemberViewPost(secondhandScrapedPost);
         when(memberViewPostRepository.findTopByMemberAndPostOrderByViewDateDesc(any(Member.class), any(Post.class)))
                 .thenReturn(memberViewPost);
         when(memberLikePostRepository.findByMemberAndPost(any(Member.class), any(Post.class)))
                 .thenReturn(Optional.empty());
 
+        int viewCount = secondhandScrapedPost.getPostViewCount();
 
         PostViewReqDTO request = new PostViewReqDTO(1L, 1L);
 
@@ -81,8 +69,10 @@ class ScrapingPostServiceImplTest {
         ScrapedPostViewResDTO response = scrapingPostService.viewScrapingPost(request);
 
         //then
-        assertThat(response.getViewCount()).isGreaterThan(viewCount);
-        assertThat(response.getIsLike()).isFalse();
+        assertThat(response.getViewCount())
+                .isGreaterThan(viewCount);
+        assertThat(response.getIsLike())
+                .isFalse();
     }
 
     @Test
@@ -90,7 +80,6 @@ class ScrapingPostServiceImplTest {
         //given
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
-
 
         PostViewReqDTO request = new PostViewReqDTO(1L, 1L);
 
@@ -100,7 +89,8 @@ class ScrapingPostServiceImplTest {
         });
 
         //then
-        assertThat(exception.getExceptionCode()).isEqualTo(CustomExceptionCode.MEMBER_NOT_FOUND);
+        assertThat(exception.getExceptionCode())
+                .isEqualTo(CustomExceptionCode.MEMBER_NOT_FOUND);
     }
 
     @Test
@@ -126,21 +116,11 @@ class ScrapingPostServiceImplTest {
     @Test
     public void viewScrapingPostWithFirstView() throws Exception {
         //given
-        Member member = Member.builder()
-                .id(1L).name("name")
-                .build();
+        Member member = getMember();
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.of(member));
-        Device device = Device.builder()
-                .id(1L).deviceName("deviceName")
-                .category(Category.createCategory("manufacturer", "deviceType"))
-                .detailId("detailId")
-                .build();
-        SecondhandScrapedPost secondhandScrapedPost = SecondhandScrapedPost.builder()
-                .id(1L).device(device)
-                .postTitle("title").postContent("content").postTime(LocalDateTime.now())
-                .postLikeCount(0).postViewCount(0).postUrl("url")
-                .build();
+
+        SecondhandScrapedPost secondhandScrapedPost = getSecondhandScrapedPost();
         when(secondhandPostRepository.findById(anyLong()))
                 .thenReturn(Optional.of(secondhandScrapedPost));
         when(memberViewPostRepository.findTopByMemberAndPostOrderByViewDateDesc(any(Member.class), any(Post.class)))
@@ -148,35 +128,26 @@ class ScrapingPostServiceImplTest {
         when(memberLikePostRepository.findByMemberAndPost(any(Member.class), any(Post.class)))
                 .thenReturn(Optional.empty());
 
-
         PostViewReqDTO request = new PostViewReqDTO(1L, 1L);
 
         //when
         ScrapedPostViewResDTO response = scrapingPostService.viewScrapingPost(request);
 
         //then
-        assertThat(response.getViewCount()).isEqualTo(secondhandScrapedPost.getPostViewCount());
-        assertThat(response.getIsLike()).isFalse();
+        assertThat(response.getViewCount())
+                .isEqualTo(secondhandScrapedPost.getPostViewCount());
+        assertThat(response.getIsLike())
+                .isFalse();
     }
 
     @Test
     public void viewScrapingPostWithLike() throws Exception {
         //given
-        Member member = Member.builder()
-                .id(1L).name("name")
-                .build();
+        Member member = getMember();
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.of(member));
-        Device device = Device.builder()
-                .id(1L).deviceName("deviceName")
-                .category(Category.createCategory("manufacturer", "deviceType"))
-                .detailId("detailId")
-                .build();
-        SecondhandScrapedPost secondhandScrapedPost = SecondhandScrapedPost.builder()
-                .id(1L).device(device)
-                .postTitle("title").postContent("content").postTime(LocalDateTime.now())
-                .postLikeCount(0).postViewCount(0).postUrl("url")
-                .build();
+
+        SecondhandScrapedPost secondhandScrapedPost = getSecondhandScrapedPost();
         when(secondhandPostRepository.findById(anyLong()))
                 .thenReturn(Optional.of(secondhandScrapedPost));
         when(memberViewPostRepository.findTopByMemberAndPostOrderByViewDateDesc(any(Member.class), any(Post.class)))
@@ -184,30 +155,29 @@ class ScrapingPostServiceImplTest {
         when(memberLikePostRepository.findByMemberAndPost(any(Member.class), any(Post.class)))
                 .thenReturn(Optional.of(mock(MemberLikePost.class)));
 
-
         PostViewReqDTO request = new PostViewReqDTO(1L, 1L);
 
         //when
         ScrapedPostViewResDTO response = scrapingPostService.viewScrapingPost(request);
 
         //then
-        assertThat(response.getIsLike()).isTrue();
+        assertThat(response.getIsLike())
+                .isTrue();
     }
 
 
     @Test
     public void findAllScrapingPostList() throws Exception {
         //given
-        Slice<SecondhandScrapedPost> posts = new SliceImpl<>
-                (new ArrayList<>(List.of(mock(SecondhandScrapedPost.class))));
+        Slice<SecondhandScrapedPost> posts = getSecondhandScrapedPostSlice();
         when(secondhandPostRepository.findSliceBy(any(Pageable.class)))
                 .thenReturn(posts);
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.of(mock(Member.class)));
 
         doReturn(mock(FindPostResDTO.class))
-                .when(scrapingPostService).setFindPostDTO(any(Member.class), any(Slice.class));
-
+                .when(scrapingPostService)
+                .setFindPostDTO(any(Member.class), any(Slice.class));
 
         FindPostReqDTO request = new FindPostReqDTO(1L, 0, 1, SortBy.RECENT_POST);
 
@@ -215,18 +185,18 @@ class ScrapingPostServiceImplTest {
         FindPostResDTO response = scrapingPostService.findALlScrapingPostList(request);
 
         //then
-        assertThat(response).isNotNull();
-        verify(scrapingPostService, times(1)).setFindPostDTO(any(), any());
+        assertThat(response)
+                .isNotNull();
+        verify(scrapingPostService, times(1))
+                .setFindPostDTO(any(Member.class), any(Slice.class));
     }
 
     @Test
     public void findAllScrapingPostListThrowPageNotFoundException() throws Exception {
         //given
-        Slice<SecondhandScrapedPost> posts = new SliceImpl<>
-                (new ArrayList<>());
+        Slice<SecondhandScrapedPost> posts = new SliceImpl<>(new ArrayList<>());
         when(secondhandPostRepository.findSliceBy(any(Pageable.class)))
                 .thenReturn(posts);
-
 
         FindPostReqDTO request = new FindPostReqDTO(1L, 0, 1, SortBy.RECENT_POST);
 
@@ -236,14 +206,14 @@ class ScrapingPostServiceImplTest {
         });
 
         //then
-        assertThat(exception.getExceptionCode()).isEqualTo(CustomExceptionCode.PAGE_NOT_FOUND);
+        assertThat(exception.getExceptionCode())
+                .isEqualTo(CustomExceptionCode.PAGE_NOT_FOUND);
     }
 
     @Test
     public void findAllScrapingPostListThrowMemberNotFoundException() throws Exception {
         //given
-        Slice<SecondhandScrapedPost> posts = new SliceImpl<>
-                (new ArrayList<>(List.of(mock(SecondhandScrapedPost.class))));
+        Slice<SecondhandScrapedPost> posts = getSecondhandScrapedPostSlice();
         when(secondhandPostRepository.findSliceBy(any(Pageable.class)))
                 .thenReturn(posts);
         when(memberRepository.findById(anyLong()))
@@ -257,7 +227,8 @@ class ScrapingPostServiceImplTest {
         });
 
         //then
-        assertThat(exception.getExceptionCode()).isEqualTo(CustomExceptionCode.MEMBER_NOT_FOUND);
+        assertThat(exception.getExceptionCode())
+                .isEqualTo(CustomExceptionCode.MEMBER_NOT_FOUND);
     }
 
 
@@ -266,14 +237,14 @@ class ScrapingPostServiceImplTest {
         //given
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.of(mock(Member.class)));
-        Slice<SecondhandScrapedPost> posts = new SliceImpl<>
-                (new ArrayList<>(List.of(mock(SecondhandScrapedPost.class))));
+
+        Slice<SecondhandScrapedPost> posts = getSecondhandScrapedPostSlice();
         when(secondhandPostRepository.findLikePostByMember_Id(anyLong(), any(Pageable.class)))
                 .thenReturn(posts);
 
         doReturn(mock(FindPostResDTO.class))
-                .when(scrapingPostService).setFindPostDTO(any(Member.class), any(Slice.class));
-
+                .when(scrapingPostService)
+                .setFindPostDTO(any(Member.class), any(Slice.class));
 
         FindPostReqDTO request = new FindPostReqDTO(1L, 0, 1, SortBy.RECENT_POST);
 
@@ -281,8 +252,10 @@ class ScrapingPostServiceImplTest {
         FindPostResDTO response = scrapingPostService.findLikeScrapingPostList(request);
 
         //then
-        assertThat(response).isNotNull();
-        verify(scrapingPostService, times(1)).setFindPostDTO(any(), any());
+        assertThat(response)
+                .isNotNull();
+        verify(scrapingPostService, times(1))
+                .setFindPostDTO(any(Member.class), any(Slice.class));
     }
 
     @Test
@@ -299,7 +272,8 @@ class ScrapingPostServiceImplTest {
         });
 
         //then
-        assertThat(exception.getExceptionCode()).isEqualTo(CustomExceptionCode.MEMBER_NOT_FOUND);
+        assertThat(exception.getExceptionCode())
+                .isEqualTo(CustomExceptionCode.MEMBER_NOT_FOUND);
     }
 
     @Test
@@ -307,11 +281,10 @@ class ScrapingPostServiceImplTest {
         //given
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.of(mock(Member.class)));
-        Slice<SecondhandScrapedPost> posts = new SliceImpl<>
-                (new ArrayList<>());
+
+        Slice<SecondhandScrapedPost> posts = new SliceImpl<>(new ArrayList<>());
         when(secondhandPostRepository.findLikePostByMember_Id(anyLong(), any(Pageable.class)))
                 .thenReturn(posts);
-
 
         FindPostReqDTO request = new FindPostReqDTO(1L, 0, 1, SortBy.RECENT_POST);
 
@@ -321,7 +294,8 @@ class ScrapingPostServiceImplTest {
         });
 
         //then
-        assertThat(exception.getExceptionCode()).isEqualTo(CustomExceptionCode.PAGE_NOT_FOUND);
+        assertThat(exception.getExceptionCode())
+                .isEqualTo(CustomExceptionCode.PAGE_NOT_FOUND);
     }
 
 
@@ -330,13 +304,14 @@ class ScrapingPostServiceImplTest {
         //given
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.of(mock(Member.class)));
-        Slice<SecondhandScrapedPost> posts = new SliceImpl<>(List.of(mock(SecondhandScrapedPost.class)));
+
+        Slice<SecondhandScrapedPost> posts = getSecondhandScrapedPostSlice();
         when(secondhandPostRepository.findByDevice_Category_Id(anyLong(), any(Pageable.class)))
                 .thenReturn(posts);
 
         doReturn(mock(FindPostResDTO.class))
-                .when(scrapingPostService).setFindPostDTO(any(Member.class), any(Slice.class));
-
+                .when(scrapingPostService)
+                .setFindPostDTO(any(Member.class), any(Slice.class));
 
         FindPostByCategoryReqDTO request = new FindPostByCategoryReqDTO(1L, 1L, 0, 10, SortBy.RECENT_POST);
 
@@ -344,8 +319,10 @@ class ScrapingPostServiceImplTest {
         FindPostResDTO response = scrapingPostService.findScrapingPostListByCategory(request);
 
         //then
-        assertThat(response).isNotNull();
-        verify(scrapingPostService, times(1)).setFindPostDTO(any(), any());
+        assertThat(response)
+                .isNotNull();
+        verify(scrapingPostService, times(1))
+                .setFindPostDTO(any(Member.class), any(Slice.class));
     }
 
     @Test
@@ -354,7 +331,6 @@ class ScrapingPostServiceImplTest {
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
 
-
         FindPostByCategoryReqDTO request = new FindPostByCategoryReqDTO(1L, 1L, 0, 10, SortBy.RECENT_POST);
 
         //when
@@ -363,7 +339,8 @@ class ScrapingPostServiceImplTest {
         });
 
         //then
-        assertThat(exception.getExceptionCode()).isEqualTo(CustomExceptionCode.MEMBER_NOT_FOUND);
+        assertThat(exception.getExceptionCode())
+                .isEqualTo(CustomExceptionCode.MEMBER_NOT_FOUND);
     }
 
     @Test
@@ -371,10 +348,10 @@ class ScrapingPostServiceImplTest {
         //given
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.of(mock(Member.class)));
+
         Slice<SecondhandScrapedPost> posts = new SliceImpl<>(new ArrayList<>());
         when(secondhandPostRepository.findByDevice_Category_Id(anyLong(), any(Pageable.class)))
                 .thenReturn(posts);
-
 
         FindPostByCategoryReqDTO request = new FindPostByCategoryReqDTO(1L, 1L, 0, 10, SortBy.RECENT_POST);
 
@@ -384,7 +361,8 @@ class ScrapingPostServiceImplTest {
         });
 
         //then
-        assertThat(exception.getExceptionCode()).isEqualTo(CustomExceptionCode.PAGE_NOT_FOUND);
+        assertThat(exception.getExceptionCode())
+                .isEqualTo(CustomExceptionCode.PAGE_NOT_FOUND);
     }
 
 
@@ -393,13 +371,14 @@ class ScrapingPostServiceImplTest {
         //given
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.of(mock(Member.class)));
-        Slice<SecondhandScrapedPost> posts = new SliceImpl<>(List.of(mock(SecondhandScrapedPost.class)));
+
+        Slice<SecondhandScrapedPost> posts = getSecondhandScrapedPostSlice();
         when(secondhandPostRepository.findByLocation_City(anyString(), any(Pageable.class)))
                 .thenReturn(posts);
 
         doReturn(mock(FindPostResDTO.class))
-                .when(scrapingPostService).setFindPostDTO(any(Member.class), any(Slice.class));
-
+                .when(scrapingPostService)
+                .setFindPostDTO(any(Member.class), any(Slice.class));
 
         FindPostByLocationReqDTO request = new FindPostByLocationReqDTO("city", 1L, 10, 0, SortBy.RECENT_POST);
 
@@ -407,8 +386,10 @@ class ScrapingPostServiceImplTest {
         FindPostResDTO response = scrapingPostService.findScrapingPostListByLocation(request);
 
         //then
-        assertThat(response).isNotNull();
-        verify(scrapingPostService, times(1)).setFindPostDTO(any(), any());
+        assertThat(response)
+                .isNotNull();
+        verify(scrapingPostService, times(1))
+                .setFindPostDTO(any(Member.class), any(Slice.class));
     }
 
     @Test
@@ -417,7 +398,6 @@ class ScrapingPostServiceImplTest {
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
 
-
         FindPostByLocationReqDTO request = new FindPostByLocationReqDTO("city", 1L, 10, 0, SortBy.RECENT_POST);
 
         //when
@@ -426,7 +406,8 @@ class ScrapingPostServiceImplTest {
         });
 
         //then
-        assertThat(exception.getExceptionCode()).isEqualTo(CustomExceptionCode.MEMBER_NOT_FOUND);
+        assertThat(exception.getExceptionCode())
+                .isEqualTo(CustomExceptionCode.MEMBER_NOT_FOUND);
     }
 
     @Test
@@ -434,10 +415,10 @@ class ScrapingPostServiceImplTest {
         //given
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.of(mock(Member.class)));
+
         Slice<SecondhandScrapedPost> posts = new SliceImpl<>(new ArrayList<>());
         when(secondhandPostRepository.findByLocation_City(anyString(), any(Pageable.class)))
                 .thenReturn(posts);
-
 
         FindPostByLocationReqDTO request = new FindPostByLocationReqDTO("city", 1L, 10, 0, SortBy.RECENT_POST);
 
@@ -447,22 +428,15 @@ class ScrapingPostServiceImplTest {
         });
 
         //then
-        assertThat(exception.getExceptionCode()).isEqualTo(CustomExceptionCode.PAGE_NOT_FOUND);
+        assertThat(exception.getExceptionCode())
+                .isEqualTo(CustomExceptionCode.PAGE_NOT_FOUND);
     }
 
 
     @Test
     public void setFindPostDTOWithLikeAndView() throws Exception {
         //given
-        Member member = Member.builder()
-                .name("name").build();
-        SecondhandScrapedPost secondhandScrapedPost = SecondhandScrapedPost.builder()
-                .member(member)
-                .id(1L).postTitle("title").location(new Location("city","street","zipcode"))
-                .secondhandPrice(1000).imgFolderAddress("imgFolderAddress").postTime(LocalDateTime.now())
-                .build();
-        Slice<SecondhandScrapedPost> posts = new SliceImpl<>(List.of(secondhandScrapedPost));
-
+        Slice<SecondhandScrapedPost> posts = getSecondhandScrapedPostSlice();
         when(memberLikePostRepository.findByMemberAndPost(any(Member.class), any(Post.class)))
                 .thenReturn(Optional.of(mock(MemberLikePost.class)));
         when(memberViewPostRepository.findTopByMemberAndPostOrderByViewDateDesc(any(Member.class), any(Post.class)))
@@ -472,22 +446,16 @@ class ScrapingPostServiceImplTest {
         FindPostResDTO response = scrapingPostService.setFindPostDTO(mock(Member.class), posts);
 
         //then
-        assertThat(response.getPosts().get(0).getIsLike()).isTrue();
-        assertThat(response.getPosts().get(0).getIsView()).isTrue();
+        assertThat(response.getPosts().get(0).getIsLike())
+                .isTrue();
+        assertThat(response.getPosts().get(0).getIsView())
+                .isTrue();
     }
 
     @Test
     public void setFindPostDTOWithNoLikeAndView() throws Exception {
         //given
-        Member member = Member.builder()
-                .name("name").build();
-        SecondhandScrapedPost secondhandScrapedPost = SecondhandScrapedPost.builder()
-                .member(member)
-                .id(1L).postTitle("title").location(new Location("city","street","zipcode"))
-                .secondhandPrice(1000).imgFolderAddress("imgFolderAddress").postTime(LocalDateTime.now())
-                .build();
-        Slice<SecondhandScrapedPost> posts = new SliceImpl<>(List.of(secondhandScrapedPost));
-
+        Slice<SecondhandScrapedPost> posts = getSecondhandScrapedPostSlice();
         when(memberLikePostRepository.findByMemberAndPost(any(Member.class), any(Post.class)))
                 .thenReturn(Optional.empty());
         when(memberViewPostRepository.findTopByMemberAndPostOrderByViewDateDesc(any(Member.class), any(Post.class)))
@@ -497,22 +465,16 @@ class ScrapingPostServiceImplTest {
         FindPostResDTO response = scrapingPostService.setFindPostDTO(mock(Member.class), posts);
 
         //then
-        assertThat(response.getPosts().get(0).getIsLike()).isFalse();
-        assertThat(response.getPosts().get(0).getIsView()).isTrue();
+        assertThat(response.getPosts().get(0).getIsLike())
+                .isFalse();
+        assertThat(response.getPosts().get(0).getIsView())
+                .isTrue();
     }
 
     @Test
     public void setFindPostDTOWithLikeAndNoView() throws Exception {
         //given
-        Member member = Member.builder()
-                .name("name").build();
-        SecondhandScrapedPost secondhandScrapedPost = SecondhandScrapedPost.builder()
-                .member(member)
-                .id(1L).postTitle("title").location(new Location("city","street","zipcode"))
-                .secondhandPrice(1000).imgFolderAddress("imgFolderAddress").postTime(LocalDateTime.now())
-                .build();
-        Slice<SecondhandScrapedPost> posts = new SliceImpl<>(List.of(secondhandScrapedPost));
-
+        Slice<SecondhandScrapedPost> posts = getSecondhandScrapedPostSlice();
         when(memberLikePostRepository.findByMemberAndPost(any(Member.class), any(Post.class)))
                 .thenReturn(Optional.of(mock(MemberLikePost.class)));
         when(memberViewPostRepository.findTopByMemberAndPostOrderByViewDateDesc(any(Member.class), any(Post.class)))
@@ -522,22 +484,16 @@ class ScrapingPostServiceImplTest {
         FindPostResDTO response = scrapingPostService.setFindPostDTO(mock(Member.class), posts);
 
         //then
-        assertThat(response.getPosts().get(0).getIsLike()).isTrue();
-        assertThat(response.getPosts().get(0).getIsView()).isFalse();
+        assertThat(response.getPosts().get(0).getIsLike())
+                .isTrue();
+        assertThat(response.getPosts().get(0).getIsView())
+                .isFalse();
     }
 
     @Test
     public void setFindPostDTOWithNoLikeAndNoView() throws Exception {
         //given
-        Member member = Member.builder()
-                .name("name").build();
-        SecondhandScrapedPost secondhandScrapedPost = SecondhandScrapedPost.builder()
-                .member(member)
-                .id(1L).postTitle("title").location(new Location("city","street","zipcode"))
-                .secondhandPrice(1000).imgFolderAddress("imgFolderAddress").postTime(LocalDateTime.now())
-                .build();
-        Slice<SecondhandScrapedPost> posts = new SliceImpl<>(List.of(secondhandScrapedPost));
-
+        Slice<SecondhandScrapedPost> posts = getSecondhandScrapedPostSlice();
         when(memberLikePostRepository.findByMemberAndPost(any(Member.class), any(Post.class)))
                 .thenReturn(Optional.empty());
         when(memberViewPostRepository.findTopByMemberAndPostOrderByViewDateDesc(any(Member.class), any(Post.class)))
@@ -547,8 +503,10 @@ class ScrapingPostServiceImplTest {
         FindPostResDTO response = scrapingPostService.setFindPostDTO(mock(Member.class), posts);
 
         //then
-        assertThat(response.getPosts().get(0).getIsLike()).isFalse();
-        assertThat(response.getPosts().get(0).getIsView()).isFalse();
+        assertThat(response.getPosts().get(0).getIsLike())
+                .isFalse();
+        assertThat(response.getPosts().get(0).getIsView())
+                .isFalse();
     }
 
 }

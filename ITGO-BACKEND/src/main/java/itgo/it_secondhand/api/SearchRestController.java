@@ -23,14 +23,10 @@ public class SearchRestController {
 
     private final SearchService searchService;
 
-    // 현재 ResponseEntity의 제네릭으로 Service에서 받은 응답객체가 들어간다.
-    // 이렇게 하면 HTTP Response에 다른 데이터가 필요하다면 Service에서 받은 응답객체에 종속적이므로 문제가 생긴다.
-    // 전용 응답 DTO로 변환하여 HTTP Response 할 수 있도록 하자.
-
-
     @GetMapping("/posts/search")
     public ResponseEntity<ResponseDTO<?>> keywordSearch
-            (@RequestParam Long memberId, @RequestParam String keyword,
+            (@RequestParam Long memberId,
+             @RequestParam String keyword,
              @PageableDefault(page = 0, size = 10) Pageable pageable){
 
         SearchReqDTO reqDTO = SearchReqDTO.builder()
@@ -41,9 +37,10 @@ public class SearchRestController {
                 .sortBy(SortBy.RECENT_POST)
                 .build();
 
-        FindPostResDTO responseDTO = searchService.keywordSearch(reqDTO);
+        FindPostResDTO resDTO =
+                searchService.keywordSearch(reqDTO);
 
-        return ResponseEntity.ok().body(success(responseDTO));
+        return ResponseEntity.ok().body(success(resDTO));
     }
 
     @GetMapping("/search/recent")
@@ -55,11 +52,13 @@ public class SearchRestController {
                 .memberId(memberId)
                 .page(pageable.getPageNumber())
                 .size(pageable.getPageSize())
-                .sortBy(SortBy.RECENT_SEARCH).build();
+                .sortBy(SortBy.RECENT_SEARCH)
+                .build();
 
-        RecentSearchResDTO responseDTO = searchService.recentSearches(reqDTO);
+        RecentSearchResDTO resDTO =
+                searchService.recentSearches(reqDTO);
 
-        return ResponseEntity.ok().body(success(responseDTO));
+        return ResponseEntity.ok().body(success(resDTO));
     }
 
 
@@ -72,9 +71,10 @@ public class SearchRestController {
                 .size(pageable.getPageSize())
                 .build();
 
-        RankResDTO responseDTO = searchService.getRanking(reqDTO);
+        RankResDTO resDTO =
+                searchService.getRanking(reqDTO);
 
-        return ResponseEntity.ok().body(success(responseDTO));
+        return ResponseEntity.ok().body(success(resDTO));
     }
 
 

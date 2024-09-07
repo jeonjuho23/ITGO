@@ -1,5 +1,6 @@
 package itgo.it_secondhand.repository;
 
+import itgo.it_secondhand.StubFactory;
 import itgo.it_secondhand.domain.*;
 import itgo.it_secondhand.domain.value.Location;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,16 +10,14 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDateTime;
 
+import static itgo.it_secondhand.StubFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 class MemberViewPostRepositoryTest {
 
     @Autowired
     MemberViewPostRepository memberViewPostRepository;
-
-    private static MemberViewPost newMemberViewPost;
 
     @Autowired
     MemberRepository memberRepository;
@@ -28,39 +27,28 @@ class MemberViewPostRepositoryTest {
     DeviceRepository deviceRepository;
     @Autowired
     SecondhandPostRepository postRepository;
-    private static Member member;
-    private static Device device;
-    private static SecondhandScrapedPost post;
+
+    private MemberViewPost memberViewPost;
+
+    private Member member;
+    private Device device;
+    private SecondhandScrapedPost post;
 
     @BeforeEach
     void setUp(){
-        Location location = new Location("city", "street", "zipcode");
-        member = Member.builder()
-                .location(location)
-                .name("name")
-                .phone("phone")
-                .imgAddress("imgAddress")
-                .build();
-        Category category = Category.createCategory("manufacturer", "deviceType");
-        device = Device.builder()
-                .category(category)
-                .detailId("detailId")
-                .deviceName("deviceName")
-                .launchPrice(1000)
-                .releaseDate(LocalDateTime.now())
-                .build();
-
-        post = SecondhandScrapedPost.createPost(member, "postTitle", "postContent", "imgFolderAddress", device, 1000, "postUrl", location);
+        post = getSecondhandScrapedPost();
+        memberViewPost = getMemberViewPost(post);
+        device = post.getDevice();
+        member = memberViewPost.getMember();
+        Category category = device.getCategory();
 
         memberRepository.save(member);
         categoryRepository.save(category);
         deviceRepository.save(device);
         postRepository.save(post);
 
-        newMemberViewPost = MemberViewPost.createMemberViewPost(member, post);
-        memberViewPostRepository.save(newMemberViewPost);
+        memberViewPostRepository.save(memberViewPost);
     }
-
 
 
     @Test
@@ -71,6 +59,7 @@ class MemberViewPostRepositoryTest {
         MemberViewPost result = memberViewPostRepository.findTopByMemberAndPostOrderByViewDateDesc(member, post);
 
         //then
-        assertThat(result.getViewDate()).isEqualTo(newMemberViewPost.getViewDate());
+        assertThat(result.getViewDate())
+                .isEqualTo(memberViewPost.getViewDate());
     }
 }

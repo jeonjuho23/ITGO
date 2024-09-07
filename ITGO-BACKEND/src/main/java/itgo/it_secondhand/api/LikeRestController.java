@@ -46,13 +46,11 @@ public class LikeRestController {
                 .memberId(memberId)
                 .likedThingId(deviceId)
                 .build();
-        Long registId = deviceLikeService.regist(reqDTO);
 
-        RegistLikeResponseDTO responseDTO = RegistLikeResponseDTO.builder()
-                .registId(registId)
-                .build();
+        Long resDTO =
+                deviceLikeService.regist(reqDTO);
 
-        return ResponseEntity.ok().body(success(responseDTO));
+        return ResponseEntity.ok().body(success(resDTO));
     }
 
     @PostMapping("/posts")
@@ -64,13 +62,11 @@ public class LikeRestController {
                 .memberId(memberId)
                 .likedThingId(postId)
                 .build();
-        Long registId = postLikeService.regist(reqDTO);
 
-        RegistLikeResponseDTO responseDTO = RegistLikeResponseDTO.builder()
-                .registId(registId)
-                .build();
+        Long resDTO =
+                postLikeService.regist(reqDTO);
 
-        return ResponseEntity.ok().body(success(responseDTO));
+        return ResponseEntity.ok().body(success(resDTO));
     }
 
     @PostMapping("/locations")
@@ -82,12 +78,11 @@ public class LikeRestController {
                 .memberId(memberId)
                 .likedThingId(locationId)
                 .build();
-        Long registId = locationLikeService.regist(reqDTO);
 
-        RegistLikeResponseDTO responseDTO = RegistLikeResponseDTO.builder()
-                .registId(registId).build();
+        Long resDTO =
+                locationLikeService.regist(reqDTO);
 
-        return ResponseEntity.ok().body(success(responseDTO));
+        return ResponseEntity.ok().body(success(resDTO));
     }
 
 
@@ -102,6 +97,7 @@ public class LikeRestController {
                 .memberId(memberId)
                 .likedThingId(deviceId)
                 .build();
+
         deviceLikeService.delete(reqDTO);
 
         return ResponseEntity.ok().body(success());
@@ -116,6 +112,7 @@ public class LikeRestController {
                 .memberId(memberId)
                 .likedThingId(postId)
                 .build();
+
         postLikeService.delete(reqDTO);
 
         return ResponseEntity.ok().body(success());
@@ -128,7 +125,9 @@ public class LikeRestController {
 
         LikeReqDTO<Long> reqDTO = LikeReqDTO.<Long>builder()
                 .memberId(memberId)
-                .likedThingId(likeId).build();
+                .likedThingId(likeId)
+                .build();
+
         locationLikeService.delete(reqDTO);
 
         return ResponseEntity.ok().body(success());
@@ -142,9 +141,10 @@ public class LikeRestController {
             (@PathVariable(name = "memberId") Long memberId,
              @PageableDefault(page = 0, size = 10) Pageable pageable){
 
-        List<PostResDTO> responseDTO = postLikeService.checkList(memberId);
+        List<PostResDTO> resDTO =
+                postLikeService.checkList(memberId);
 
-        return ResponseEntity.ok().body(success(responseDTO));
+        return ResponseEntity.ok().body(success(resDTO));
     }
 
     @GetMapping("/posts")
@@ -159,42 +159,48 @@ public class LikeRestController {
                 .memberId(memberId)
                 .build();
 
-        FindPostResDTO responseDTO = scrapingPostService.findLikeScrapingPostList(reqDTO);
+        FindPostResDTO resDTO =
+                scrapingPostService.findLikeScrapingPostList(reqDTO);
 
-        return ResponseEntity.ok().body(success(responseDTO));
+        return ResponseEntity.ok().body(success(resDTO));
     }
+
     @GetMapping("/locations")
     public ResponseEntity<ResponseDTO<?>> findLocationList
             (@PathVariable(name = "memberId") Long memberId,
              @PageableDefault(page = 0, size = 10) Pageable pageable){
 
-        List<LocationResDTO<Long>> responseDTO = locationLikeService.checkList(memberId);
+        List<LocationResDTO<Long>> responseDTO =
+                locationLikeService.checkList(memberId);
 
         return ResponseEntity.ok().body(success(responseDTO));
     }
-
 
 
     //== find by keword ==//
 
     @GetMapping("/devices/search")
     public ResponseEntity<ResponseDTO<?>> findDeviceByKeyword
-            (@PathVariable(name = "memberId") Long memberId, @RequestParam String keyword,
+            (@PathVariable(name = "memberId") Long memberId,
+             @RequestParam String keyword,
              @PageableDefault(page = 0, size = 10) Pageable pageable){
 
-        List<DeviceResDTO> res = deviceLikeService.findByKeyword(keyword);
+        List<DeviceResDTO> resDTO =
+                deviceLikeService.findByKeyword(keyword);
 
-        return ResponseEntity.ok().body(success(res));
+        return ResponseEntity.ok().body(success(resDTO));
     }
 
     @GetMapping("/locations/search")
     public ResponseEntity<ResponseDTO<?>> findLocationByKeyword
-            (@PathVariable(name = "memberId") Long memberId, @RequestParam String keyword,
+            (@PathVariable(name = "memberId") Long memberId,
+             @RequestParam String keyword,
              @PageableDefault(page = 0, size = 10) Pageable pageable){
 
-        List<LocationResDTO<String>> res = locationLikeService.findByKeyword(keyword);
+        List<LocationResDTO<String>> resDTO =
+                locationLikeService.findByKeyword(keyword);
 
-        return ResponseEntity.ok().body(success(res));
+        return ResponseEntity.ok().body(success(resDTO));
     }
 
 

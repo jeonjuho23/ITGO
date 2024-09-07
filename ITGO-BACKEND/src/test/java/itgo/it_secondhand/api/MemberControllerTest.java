@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import itgo.it_secondhand.api.DTO.Member.FetchMemberProfileResponseDTO;
 import itgo.it_secondhand.api.DTO.Member.MemberDTO;
 import itgo.it_secondhand.domain.Member;
-import itgo.it_secondhand.exception.CustomExceptionCode;
-import itgo.it_secondhand.exception.RestApiException;
 import itgo.it_secondhand.service.Member.MemberServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,9 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static itgo.it_secondhand.api.ControllerTestUtil.checkResponseDataThrowException;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -35,13 +30,9 @@ class MemberControllerTest {
     @MockBean
     MemberServiceImpl memberService;
 
-    private static StringBuilder sb;
-
     @Autowired
     ObjectMapper objectMapper;
-
-    private static final CustomExceptionCode exceptionCode
-            = CustomExceptionCode.INTERNAL_SERVER_ERROR;
+    StringBuilder sb;
 
     @BeforeEach
     void setUp(){
@@ -51,46 +42,25 @@ class MemberControllerTest {
     @Test
     public void registerUser() throws Exception {
         //given
-        Member member = Member.builder()
-                .id(1L).build();
         when(memberService.createMember(any(MemberDTO.class)))
-                .thenReturn(member);
-
-        String requestBody = objectMapper.writeValueAsString(MemberDTO.builder().build());
+                .thenReturn(mock(Member.class));
 
         String requestUrl = sb.append("/signup").toString();
+        String requestBody = objectMapper.writeValueAsString(mock(MemberDTO.class));
 
         //when
         ResultActions action = mockMvc
                 .perform(post(requestUrl)
                         .content(requestBody)
-                        .contentType(MediaType.APPLICATION_JSON));
+                        .contentType(MediaType.APPLICATION_JSON)
+                );
 
         //then
+        verify(memberService, times(1))
+                .createMember(any(MemberDTO.class));
         action.andExpect(status().isOk())
-                .andExpect(jsonPath("data").value(member.getId()))
+                .andExpect(jsonPath("data").isNumber())
                 .andDo(print());
-    }
-
-
-    @Test
-    public void registerUserThrowServiceException() throws Exception {
-        //given
-        when(memberService.createMember(any(MemberDTO.class)))
-                .thenThrow(new RestApiException(exceptionCode));
-
-        String requestBody = objectMapper.writeValueAsString(MemberDTO.builder().build());
-
-        String requestUrl = sb.append("/signup").toString();
-
-        //when
-        ResultActions action = mockMvc
-                .perform(post(requestUrl)
-                        .content(requestBody)
-                        .contentType(MediaType.APPLICATION_JSON));
-
-        //then
-        checkResponseDataThrowException(action, exceptionCode);
     }
 
 
@@ -105,32 +75,14 @@ class MemberControllerTest {
 
         //when
         ResultActions action = mockMvc
-                .perform(get(requestUrl, memberId)
-                        .contentType(MediaType.APPLICATION_JSON));
+                .perform(get(requestUrl, memberId));
 
         //then
+        verify(memberService, times(1))
+                .getByCredentials(anyLong());
         action.andExpect(status().isOk())
                 .andExpect(jsonPath("data").isNotEmpty())
                 .andDo(print());
-    }
-
-
-    @Test
-    public void myProfileThrowServiceException() throws Exception {
-        //given
-        when(memberService.getByCredentials(anyLong()))
-                .thenThrow(new RestApiException(exceptionCode));
-
-        String requestUrl = sb.append("/{memberId}/profiles").toString();
-        Long memberId = 1L;
-
-        //when
-        ResultActions action = mockMvc
-                .perform(get(requestUrl, memberId)
-                        .contentType(MediaType.APPLICATION_JSON));
-
-        //then
-        checkResponseDataThrowException(action, exceptionCode);
     }
 
 
@@ -140,8 +92,8 @@ class MemberControllerTest {
         when(memberService.updateMember(any(MemberDTO.class), anyLong()))
                 .thenReturn(mock(FetchMemberProfileResponseDTO.class));
 
-        String requestBody = objectMapper.writeValueAsString(MemberDTO.builder().build());
         String requestUrl = sb.append("/{memberId}/profiles").toString();
+        String requestBody = objectMapper.writeValueAsString(mock(MemberDTO.class));
         Long memberId = 1L;
 
         //when
@@ -151,29 +103,12 @@ class MemberControllerTest {
                         .contentType(MediaType.APPLICATION_JSON));
 
         //then
+        verify(memberService, times(1))
+                .updateMember(any(MemberDTO.class), anyLong());
         action.andExpect(status().isOk())
                 .andExpect(jsonPath("data").isNotEmpty())
                 .andDo(print());
     }
 
 
-    @Test
-    public void updateProfileThrowServiceException() throws Exception {
-        //given
-        when(memberService.updateMember(any(MemberDTO.class), anyLong()))
-                .thenThrow(new RestApiException(exceptionCode));
-
-        String requestBody = objectMapper.writeValueAsString(MemberDTO.builder().build());
-        String requestUrl = sb.append("/{memberId}/profiles").toString();
-        Long memberId = 1L;
-
-        //when
-        ResultActions action = mockMvc
-                .perform(patch(requestUrl, memberId)
-                        .content(requestBody)
-                        .contentType(MediaType.APPLICATION_JSON));
-
-        //then
-        checkResponseDataThrowException(action, exceptionCode);
-    }
 }

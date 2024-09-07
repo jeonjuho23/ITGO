@@ -1,5 +1,6 @@
 package itgo.it_secondhand.repository;
 
+import itgo.it_secondhand.StubFactory;
 import itgo.it_secondhand.domain.Member;
 import itgo.it_secondhand.domain.value.Location;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.Optional;
 
+import static itgo.it_secondhand.StubFactory.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,17 +21,11 @@ class MemberRepositoryTest {
     @Autowired
     MemberRepository memberRepository;
 
-    private static Member member;
+    private Member member;
 
     @BeforeEach
     void setUp(){
-        Location location = new Location("city", "street", "zipcode");
-        member = Member.builder()
-                .location(location)
-                .name("name")
-                .phone("phone")
-                .imgAddress("imgAddress")
-                .build();
+        member = getMember();
 
         memberRepository.save(member);
     }
@@ -47,7 +43,8 @@ class MemberRepositoryTest {
         assertThat(optionalResult.isPresent()).isTrue();
 
         Member result = optionalResult.orElseThrow();
-        assertThat(result.getId()).isEqualTo(member.getId());
+        assertThat(result.getId())
+                .isEqualTo(member.getId());
     }
 
 
@@ -60,6 +57,7 @@ class MemberRepositoryTest {
         Boolean result = memberRepository.existsByPhone(phone);
 
         //then
-        assertThat(result).isTrue();
+        assertThat(result)
+                .isTrue();
     }
 }

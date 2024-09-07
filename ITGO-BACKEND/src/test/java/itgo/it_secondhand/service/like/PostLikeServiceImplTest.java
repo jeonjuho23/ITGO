@@ -3,7 +3,6 @@ package itgo.it_secondhand.service.like;
 import itgo.it_secondhand.domain.Member;
 import itgo.it_secondhand.domain.MemberLikePost;
 import itgo.it_secondhand.domain.Post;
-import itgo.it_secondhand.domain.SecondhandScrapedPost;
 import itgo.it_secondhand.exception.CustomExceptionCode;
 import itgo.it_secondhand.exception.RestApiException;
 import itgo.it_secondhand.repository.MemberLikePostRepository;
@@ -18,11 +17,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static itgo.it_secondhand.StubFactory.getMemberLikeSecondhandScrapedPost;
+import static itgo.it_secondhand.StubFactory.getSecondhandScrapedPost;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PostLikeServiceImplTest {
@@ -46,12 +45,9 @@ class PostLikeServiceImplTest {
         when(postRepository.findById(anyLong()))
                 .thenReturn(Optional.of(mock(Post.class)));
 
-        Long memberLikePostId = 1L;
-        MemberLikePost memberLikePost = MemberLikePost.builder()
-                .id(memberLikePostId).build();
+        MemberLikePost memberLikePost = getMemberLikeSecondhandScrapedPost();
         when(memberLikePostRepository.save(any(MemberLikePost.class)))
                 .thenReturn(memberLikePost);
-
 
         LikeReqDTO<Long> request = new LikeReqDTO<>(1L, 1L);
 
@@ -59,7 +55,8 @@ class PostLikeServiceImplTest {
         Long response = postLikeService.regist(request);
 
         //then
-        assertThat(response).isEqualTo(memberLikePostId);
+        assertThat(response)
+                .isEqualTo(memberLikePost.getId());
     }
 
     @Test
@@ -67,7 +64,6 @@ class PostLikeServiceImplTest {
         //given
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
-
 
         LikeReqDTO<Long> request = new LikeReqDTO<>(1L, 1L);
 
@@ -77,7 +73,8 @@ class PostLikeServiceImplTest {
         });
 
         //then
-        assertThat(exception.getExceptionCode()).isEqualTo(CustomExceptionCode.MEMBER_NOT_FOUND);
+        assertThat(exception.getExceptionCode())
+                .isEqualTo(CustomExceptionCode.MEMBER_NOT_FOUND);
     }
 
     @Test
@@ -88,7 +85,6 @@ class PostLikeServiceImplTest {
         when(postRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
 
-
         LikeReqDTO<Long> request = new LikeReqDTO<>(1L, 1L);
 
         //when
@@ -97,7 +93,8 @@ class PostLikeServiceImplTest {
         });
 
         //then
-        assertThat(exception.getExceptionCode()).isEqualTo(CustomExceptionCode.POST_NOT_FOUND);
+        assertThat(exception.getExceptionCode())
+                .isEqualTo(CustomExceptionCode.POST_NOT_FOUND);
     }
 
 
@@ -106,7 +103,8 @@ class PostLikeServiceImplTest {
         //given
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.of(mock(Member.class)));
-        Post post = SecondhandScrapedPost.createPost();
+
+        Post post = getSecondhandScrapedPost();
         when(postRepository.findById(anyLong()))
                 .thenReturn(Optional.of(post));
         when(memberLikePostRepository.findByMemberAndPost(any(Member.class), any(Post.class)))
@@ -120,7 +118,8 @@ class PostLikeServiceImplTest {
         postLikeService.delete(request);
 
         //then
-        assertThat(post.getPostLikeCount()).isLessThan(postLikeCount);
+        assertThat(post.getPostLikeCount())
+                .isLessThan(postLikeCount);
     }
 
     @Test
@@ -128,7 +127,6 @@ class PostLikeServiceImplTest {
         //given
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
-
 
         LikeReqDTO<Long> request = new LikeReqDTO<>(1L, 1L);
 
@@ -138,7 +136,8 @@ class PostLikeServiceImplTest {
         });
 
         //then
-        assertThat(exception.getExceptionCode()).isEqualTo(CustomExceptionCode.MEMBER_NOT_FOUND);
+        assertThat(exception.getExceptionCode())
+                .isEqualTo(CustomExceptionCode.MEMBER_NOT_FOUND);
     }
 
     @Test
@@ -149,7 +148,6 @@ class PostLikeServiceImplTest {
         when(postRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
 
-
         LikeReqDTO<Long> request = new LikeReqDTO<>(1L, 1L);
 
         //when
@@ -158,7 +156,8 @@ class PostLikeServiceImplTest {
         });
 
         //then
-        assertThat(exception.getExceptionCode()).isEqualTo(CustomExceptionCode.POST_NOT_FOUND);
+        assertThat(exception.getExceptionCode())
+                .isEqualTo(CustomExceptionCode.POST_NOT_FOUND);
     }
 
     @Test
@@ -171,7 +170,6 @@ class PostLikeServiceImplTest {
         when(memberLikePostRepository.findByMemberAndPost(any(Member.class), any(Post.class)))
                 .thenReturn(Optional.empty());
 
-
         LikeReqDTO<Long> request = new LikeReqDTO<>(1L, 1L);
 
         //when
@@ -180,8 +178,8 @@ class PostLikeServiceImplTest {
         });
 
         //then
-        assertThat(exception.getExceptionCode()).isEqualTo(CustomExceptionCode.LIKE_NOT_FOUND);
+        assertThat(exception.getExceptionCode())
+                .isEqualTo(CustomExceptionCode.LIKE_NOT_FOUND);
     }
-
 
 }

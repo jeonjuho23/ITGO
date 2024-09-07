@@ -1,18 +1,18 @@
 package itgo.it_secondhand.repository;
 
+import itgo.it_secondhand.StubFactory;
 import itgo.it_secondhand.domain.*;
 import itgo.it_secondhand.domain.value.Location;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 import java.time.LocalDateTime;
 
-import static org.assertj.core.api.Assertions.*;
+import static itgo.it_secondhand.StubFactory.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -20,8 +20,6 @@ class SecondhandPostRepositoryTest {
 
     @Autowired
     SecondhandPostRepository secondhandPostRepository;
-
-    private static SecondhandScrapedPost newPost;
 
     @Autowired
     MemberRepository memberRepository;
@@ -31,38 +29,29 @@ class SecondhandPostRepositoryTest {
     DeviceRepository deviceRepository;
     @Autowired
     MemberLikePostRepository memberLikePostRepository;
-    private static Category category;
-    private static Member member;
-    private static Device device;
 
-    private static final Pageable pageable = PageRequest.of(0, 10);
+    private SecondhandScrapedPost post;
+    private Category category;
+    private Member member;
+    private Device device;
+    private Pageable pageable;
 
     @BeforeEach
     void setUp() {
-        Location location = new Location("city", "street", "zipcode");
-        member = Member.builder()
-                .location(location)
-                .name("name")
-                .phone("phone")
-                .imgAddress("imgAddress")
-                .build();
-        category = Category.createCategory("manufacturer", "deviceType");
-        device = Device.builder()
-                .category(category)
-                .detailId("detailId")
-                .deviceName("deviceName")
-                .launchPrice(1000)
-                .releaseDate(LocalDateTime.now())
-                .build();
+        MemberLikePost memberLikePost = getMemberLikeSecondhandScrapedPost();
+
+        member = memberLikePost.getMember();
+        post = (SecondhandScrapedPost) memberLikePost.getPost();
+        device = post.getDevice();
+        category = device.getCategory();
+
+        pageable = getPageable();
 
         memberRepository.save(member);
         categoryRepository.save(category);
         deviceRepository.save(device);
+        secondhandPostRepository.save(post);
 
-        newPost = SecondhandScrapedPost.createPost(member, "postTitle", "postContent", "imgFolderAddress", device, 1000, "postUrl", location);
-        secondhandPostRepository.save(newPost);
-
-        MemberLikePost memberLikePost = MemberLikePost.createMemberLikePost(member, newPost);
         memberLikePostRepository.save(memberLikePost);
     }
 
@@ -75,7 +64,8 @@ class SecondhandPostRepositoryTest {
         Slice<SecondhandScrapedPost> result = secondhandPostRepository.findSliceBy(pageable);
 
         //then
-        assertThat(result.getContent().get(0).getId()).isEqualTo(newPost.getId());
+        assertThat(result.getContent().get(0).getId())
+                .isEqualTo(post.getId());
     }
 
     @Test
@@ -88,8 +78,10 @@ class SecondhandPostRepositoryTest {
 
         //then
         SecondhandScrapedPost savedPost = result.getContent().get(0);
-        assertThat(savedPost.getMember().getName()).isEqualTo(member.getName());
-        assertThat(savedPost.getDevice().getDeviceName()).isEqualTo(device.getDeviceName());
+        assertThat(savedPost.getMember().getName())
+                .isEqualTo(member.getName());
+        assertThat(savedPost.getDevice().getDeviceName())
+                .isEqualTo(device.getDeviceName());
     }
 
 
@@ -103,8 +95,10 @@ class SecondhandPostRepositoryTest {
 
         //then
         SecondhandScrapedPost savedPost = result.getContent().get(0);
-        assertThat(savedPost.getMember().getName()).isEqualTo(member.getName());
-        assertThat(savedPost.getDevice().getDeviceName()).isEqualTo(device.getDeviceName());
+        assertThat(savedPost.getMember().getName())
+                .isEqualTo(member.getName());
+        assertThat(savedPost.getDevice().getDeviceName())
+                .isEqualTo(device.getDeviceName());
     }
 
 
@@ -118,22 +112,26 @@ class SecondhandPostRepositoryTest {
 
         //then
         SecondhandScrapedPost savedPost = result.getContent().get(0);
-        assertThat(savedPost.getMember().getName()).isEqualTo(member.getName());
-        assertThat(savedPost.getDevice().getDeviceName()).isEqualTo(device.getDeviceName());
+        assertThat(savedPost.getMember().getName())
+                .isEqualTo(member.getName());
+        assertThat(savedPost.getDevice().getDeviceName())
+                .isEqualTo(device.getDeviceName());
     }
 
 
     @Test
     public void findByLocation_City() throws Exception {
         //given
-        String city = newPost.getLocation().getCity();
+        String city = post.getLocation().getCity();
 
         //when
         Slice<SecondhandScrapedPost> result = secondhandPostRepository.findByLocation_City(city, pageable);
 
         //then
         SecondhandScrapedPost savedPost = result.getContent().get(0);
-        assertThat(savedPost.getMember().getName()).isEqualTo(member.getName());
-        assertThat(savedPost.getDevice().getDeviceName()).isEqualTo(device.getDeviceName());
+        assertThat(savedPost.getMember().getName())
+                .isEqualTo(member.getName());
+        assertThat(savedPost.getDevice().getDeviceName())
+                .isEqualTo(device.getDeviceName());
     }
 }

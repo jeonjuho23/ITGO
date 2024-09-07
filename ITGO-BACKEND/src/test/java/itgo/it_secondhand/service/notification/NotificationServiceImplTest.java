@@ -1,7 +1,6 @@
 package itgo.it_secondhand.service.notification;
 
 import itgo.it_secondhand.domain.Notification;
-import itgo.it_secondhand.domain.NotificationMessage;
 import itgo.it_secondhand.exception.CustomExceptionCode;
 import itgo.it_secondhand.exception.RestApiException;
 import itgo.it_secondhand.repository.NotificationRepository;
@@ -14,9 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import static itgo.it_secondhand.StubFactory.getNotification;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -34,12 +31,9 @@ class NotificationServiceImplTest {
     @Test
     public void findNotificationList() throws Exception {
         //given
-        NotificationMessage notificationMessage = new NotificationMessage("message", null);
-        Notification notification = Notification.builder()
-                .messages(new ArrayList<>(List.of(notificationMessage))).build();
+        Notification notification = getNotification();
         when(notificationRepository.findByMemberId(anyLong()))
                 .thenReturn(notification);
-
 
         CheckNotificationReqDTO request = new CheckNotificationReqDTO(1L, 0, 10);
 
@@ -47,7 +41,8 @@ class NotificationServiceImplTest {
         CheckNotificationResDTO response = notificationService.findNotificationList(request);
 
         //then
-        assertThat(response.getNotificationMessageList().get(0)).isEqualTo(notificationMessage.getMessage());
+        assertThat(response.getNotificationMessageList().get(0))
+                .isEqualTo(notification.getMessages().get(0).getMessage());
     }
 
 
@@ -57,7 +52,6 @@ class NotificationServiceImplTest {
         when(notificationRepository.findByMemberId(anyLong()))
                 .thenReturn(mock(Notification.class));
 
-
         CheckNotificationReqDTO request = new CheckNotificationReqDTO(1L, 0, 10);
 
         //when
@@ -66,20 +60,19 @@ class NotificationServiceImplTest {
         });
 
         //then
-        assertThat(exception.getExceptionCode()).isEqualTo(CustomExceptionCode.NO_NOTIFICATION_LIST);
+        assertThat(exception.getExceptionCode())
+                .isEqualTo(CustomExceptionCode.NO_NOTIFICATION_LIST);
     }
 
 
     @Test
     public void deleteNotification() throws Exception {
         //given
-        NotificationMessage notificationMessage = new NotificationMessage("message", null);
-        Notification notification = Notification.builder()
-                .messages(new ArrayList<>(List.of(notificationMessage))).build();
-        int messageSize = notification.getMessages().size();
+        Notification notification = getNotification();
         when(notificationRepository.findByMemberId(anyLong()))
                 .thenReturn(notification);
 
+        int messageSize = notification.getMessages().size();
 
         ManageNotificationReqDTO request = new ManageNotificationReqDTO(1L, 0);
 
@@ -87,7 +80,8 @@ class NotificationServiceImplTest {
         notificationService.deleteNotification(request);
 
         //then
-        assertThat(notification.getMessages().size()).isLessThan(messageSize);
+        assertThat(notification.getMessages().size())
+                .isLessThan(messageSize);
     }
 
 }

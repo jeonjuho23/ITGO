@@ -25,14 +25,15 @@ public class NotificationRestController {
             (@RequestParam Long memberId,
              @PageableDefault(page = 0, size = 10) Pageable pageable){
 
-        CheckNotificationReqDTO findReqDTO = CheckNotificationReqDTO.builder()
+        CheckNotificationReqDTO reqDTO = CheckNotificationReqDTO.builder()
                 .memberId(memberId)
                 .page(pageable.getPageNumber())
                 .size(pageable.getPageSize()).build();
 
-        CheckNotificationResDTO notificationList = notificationService.findNotificationList(findReqDTO);
+        CheckNotificationResDTO resDTO =
+                notificationService.findNotificationList(reqDTO);
 
-        return ResponseEntity.ok().body(success(notificationList));
+        return ResponseEntity.ok().body(success(resDTO));
     }
 
     @DeleteMapping("/{notificationId}")
@@ -40,12 +41,12 @@ public class NotificationRestController {
             (@RequestParam Long memberId,
              @PathVariable(name = "notificationId") int messageIndex){
 
-        ManageNotificationReqDTO deleteReqDTO = ManageNotificationReqDTO.builder()
+        ManageNotificationReqDTO reqDTO = ManageNotificationReqDTO.builder()
                 .memberId(memberId)
                 .messageIndex(messageIndex)
                 .build();
 
-        notificationService.deleteNotification(deleteReqDTO);
+        notificationService.deleteNotification(reqDTO);
 
         return ResponseEntity.ok().body(success());
     }
@@ -54,11 +55,11 @@ public class NotificationRestController {
     public ResponseEntity<ResponseDTO<?>> deleteAllNotification
             (@RequestParam Long memberId){
 
-        ManageNotificationReqDTO deleteReqDTO = ManageNotificationReqDTO.builder()
+        ManageNotificationReqDTO reqDTO = ManageNotificationReqDTO.builder()
                 .memberId(memberId)
                 .build();
 
-        notificationService.deleteAllNotification(deleteReqDTO);
+        notificationService.deleteAllNotification(reqDTO);
 
         return ResponseEntity.ok().body(success());
     }
