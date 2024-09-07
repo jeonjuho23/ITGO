@@ -3,25 +3,24 @@
 
 ### Update
 
-- 2024.05
-  - 무중단 배포
+- 2024
+  - 배포
     - Nginx로 로드밸런싱하여 블루/그린 방식의 무중단 배포 파이프라인 구축
-- 2024.06
   - [API 명세서](https://iamjeonjuho.notion.site/API-Doc-bc06ae45699542618be24db7850c249d?pvs=74) 작성
-  - 적절한 HTTP 메서드와 URL 적용
-  - 모든 응답 데이터를 json 객체 타입으로 반환하기 위해 공통 ResponseDTO<T>를 적용
-  - 전역 예외처리 적용
-- 2024.08
-  - 단위 테스트 코드 작성
-    - Repository
-    - Service
-    - Controller
-- 2024.09
-  - 단위 테스트 리팩터링
-    - Controller
-      - 상태 검증 -> 행위 검증
-    - Service, Repository
-      - Stub 객체를 생성하는 팩토리 클래스 사용
+  - 리팩터링
+    - 적절한 HTTP 메서드와 URL 적용
+    - 모든 응답 데이터를 json 객체 타입으로 반환하기 위해 공통 ResponseDTO<T>를 적용
+    - 전역 예외처리 적용
+  - 테스트 코드
+    - 단위 테스트 코드 작성
+      - Repository
+      - Service
+      - Controller
+    - 단위 테스트 리팩터링
+      - Controller
+        - 상태 검증 -> 행위 검증
+      - Service, Repository
+        - Stub 객체를 생성하는 팩토리 클래스 사용
 
 <br/>
 
