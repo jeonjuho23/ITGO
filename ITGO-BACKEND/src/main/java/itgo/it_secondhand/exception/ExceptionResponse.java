@@ -1,14 +1,8 @@
 package itgo.it_secondhand.exception;
 
 import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-@Getter
 @Builder
-@RequiredArgsConstructor
-public class ExceptionResponse {
+public record ExceptionResponse(String code, String message) {
 
-    private final String code;
-    private final String message;
 }
