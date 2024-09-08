@@ -1,7 +1,6 @@
 package itgo.it_secondhand.api;
 
 import itgo.it_secondhand.api.DTO.ResponseDTO;
-import itgo.it_secondhand.api.DTO.like.RegistLikeResponseDTO;
 import itgo.it_secondhand.enum_.SortBy;
 import itgo.it_secondhand.service.like.DTO.DeviceResDTO;
 import itgo.it_secondhand.service.like.DTO.LikeReqDTO;
