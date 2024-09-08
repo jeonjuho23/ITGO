@@ -1,5 +1,6 @@
 package itgo.it_secondhand.exception;
 
+import itgo.it_secondhand.api.DTO.ResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -37,11 +38,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(makeErrorResponse(exceptionCode));
     }
 
-    private ExceptionResponse makeErrorResponse(ExceptionCode exceptionCode) {
-        return ExceptionResponse.builder()
-                .code(exceptionCode.name())
-                .message(exceptionCode.getMessage())
-                .build();
+    private ResponseDTO<?> makeErrorResponse(ExceptionCode exceptionCode) {
+        return ResponseDTO.error(exceptionCode.name(), exceptionCode.getMessage());
     }
 
     private ResponseEntity<?> handleExceptionInternal(ExceptionCode exceptionCode, String message) {
@@ -49,11 +47,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(makeErrorResponse(exceptionCode, message));
     }
 
-    private ExceptionResponse makeErrorResponse(ExceptionCode exceptionCode, String message) {
-        return ExceptionResponse.builder()
-                .code(exceptionCode.name())
-                .message(message)
-                .build();
+    private ResponseDTO<?> makeErrorResponse(ExceptionCode exceptionCode, String message) {
+        return ResponseDTO.error(exceptionCode.name(), message);
     }
 
 }

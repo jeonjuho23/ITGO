@@ -1,5 +1,6 @@
 package itgo.it_secondhand.exception;
 
+import itgo.it_secondhand.api.DTO.ResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,7 +29,7 @@ class GlobalExceptionHandlerTest {
         //then
         assertThat(response.getStatusCode())
                 .isEqualTo(customExceptionCode.getHttpStatus());
-        assertThat(((ExceptionResponse) response.getBody()).message())
+        assertThat(((ResponseDTO<?>) response.getBody()).getMessage())
                 .isEqualTo(customExceptionCode.getMessage());
     }
 
@@ -46,7 +47,7 @@ class GlobalExceptionHandlerTest {
         //then
         assertThat(response.getStatusCode())
                 .isEqualTo(expectedExceptionCode.getHttpStatus());
-        assertThat(((ExceptionResponse) response.getBody()).message())
+        assertThat(((ResponseDTO<?>) response.getBody()).getMessage())
                 .isEqualTo(expectedExceptionCode.getMessage());
     }
 
@@ -64,7 +65,7 @@ class GlobalExceptionHandlerTest {
         //then
         assertThat(response.getStatusCode())
                 .isEqualTo(expectedExceptionCode.getHttpStatus());
-        assertThat(((ExceptionResponse) response.getBody()).message())
+        assertThat(((ResponseDTO<?>) response.getBody()).getMessage())
                 .isEqualTo(expectedExceptionCode.getMessage());
     }
 

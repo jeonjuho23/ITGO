@@ -1,9 +1,6 @@
 package itgo.it_secondhand.api.DTO;
 
-import itgo.it_secondhand.domain.Member;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 
 @AllArgsConstructor
@@ -18,8 +15,9 @@ public class ResponseDTO<T> {
     public static <T> ResponseDTO<T> success(){
         return new ResponseDTO<>("SUCCESS", null);
     }
-    public static <T> ResponseDTO<T> error(String message){
-        return new ResponseDTO<>(message, null);
+    public static <T> ResponseDTO<T> error(String message, T code){
+        return new ResponseDTO<>(message, code);
     }
+
 }
 
