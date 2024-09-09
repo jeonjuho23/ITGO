@@ -1,7 +1,44 @@
 # ITGO
-중고거래 통합 모바일 애플리케이션
+> ITGO는 중고거래 사이트의 게시글을 자동으로 스크래핑하여 하나의 모바일 애플리케이션으로 통합하는 서비스입니다.  
+이곳 저장소는 ITGO 서비스의 애플리케이션 서버와 스크래퍼를 보여줍니다.  
+스크래퍼는 독립적인 API로 구현되어 자동으로 중고거래 사이트에서 최신 게시글을 가져와 DB의 게시글 테이블의 스키마에 맞게 중복 없이 저장해줍니다.  
+애플리케이션 서버는 사용자의 요청에 맞는 데이터를 DB에서 조회하여 응답해줍니다. 
 
-### Update (시간순)
+
+
+<br/><br/>
+
+## 기술 스택
+- Server
+  - Java 17
+  - Spring Boot 3.1.4
+  - Spring Data JPA
+- Testing
+  - Mockito
+  - Junit 5
+  - Postman
+- Scrapper
+  - Python 3
+  - FastAPI
+- DB
+  - MySQL
+  - MongoDB
+- DevOps
+  - AWS EC2 (Ubuntu)
+  - AWS RDS
+  - MongoDB Atlas
+  - Nginx
+  - Jenkins
+  - Docker
+  - Github
+- Communication
+  - Notion
+  - Swagger
+  
+
+<br/><br/>
+
+## Update (시간순)
 
 - 2024
   - 배포
@@ -22,29 +59,29 @@
       - Service, Repository
         - Stub 객체를 생성하는 팩토리 클래스 사용
 
-<br/>
+<br/><br/>
 
-#### Backend System Architecture
+## Backend System Architecture
 ![SystemArchitecture](./image/SystemArchitecture.drawio.png)
 
 <br/>
 
-#### Backend Deploy Architecture
+## Backend Deploy Architecture
 ![DeployArchitecture](./image/DeployArchitecture.drawio.png)
 
 <br/>
 
-#### ERD
+## ERD
 ![ERD](./image/gul_erd.drawio.png)
 
-<br/>
-<details markdown="1">
-<summary><b> Features </b></summary>
+<br/><br/>
+
+## 구현 기능
+> 제가 구현한 기능을 `표시`했습니다.
 
 <br/>
 
-##### 애플리케이션 서버
-
+#### 애플리케이션 서버
 - 회원
   - 회원가입 
 - `프로필`
@@ -65,7 +102,6 @@
   - 게시글 검색
     - 키워드로 검색
     - 최근 검색 키워드 리스트 조회
-    - 검색 순위 조회
 - `관심`
   - 관심 기기 등록
   - 관심 게시글 등록
@@ -81,14 +117,9 @@
 
 <br/>
 
-`중고 거래 게시글 스크래퍼`
-- 중고 거래 게시글 스크래핑
+#### 중고 거래 게시글 자동 스크래퍼
+- `중고 거래 게시글 스크래핑`
   - 게시글에서 GPT를 사용해 제품명 추출
   - 중복을 제외한 게시글 데이터베이스에 저장
 
 <br/>
-
-
-> 제가 구현한 기능을 표시했습니다.
-
-</details>
